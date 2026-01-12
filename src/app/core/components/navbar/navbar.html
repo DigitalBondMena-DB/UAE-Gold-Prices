@@ -5,7 +5,7 @@
       <div class="absolute inset-y-0 left-0 flex items-center md:hidden">
         <!-- Mobile menu button-->
         <button type="button" (click)="toggleMobileMenu()"
-          class="relative inline-flex items-center justify-center rounded-md p-2 text-[#440000] hover:bg-gray-100 focus:outline-2 focus:outline-[#ED2924]">
+          class="relative inline-flex items-center justify-center rounded-md p-2 text-[#D0A51A] hover:bg-gray-100 focus:outline-2 focus:outline-[#D0A51A]">
           <span class="absolute -inset-0.5"></span>
           <span class="sr-only">Open main menu</span>
           @if (!isMobileMenuOpen()) {
@@ -25,7 +25,7 @@
         <!--! logo -->
         <div class="flex shrink-0 items-center">
           <a routerLink="/" class="cursor-pointer">
-            <img src="images/logo/logo.webp" alt="Your Company" class="h-14 w-auto" />
+            <img src="images/logo/logo.webp" alt="Your Company" class=" h-14 w-auto me-4" />
           </a>
         </div>
         <div class="hidden md:ml-6 md:block ">
@@ -35,28 +35,27 @@
             <!-- <a href="#" aria-current="page" class="rounded-md bg-gray-950/50 px-3 py-2 text-sm font-medium text-white">Dashboard</a> -->
             <a routerLink="/" [routerLinkActiveOptions]="{exact: true}"
               routerLinkActive="  bg-gray-100 rounded-md text-[#D0A51A]  "
-              class=" px-3 py-2 text-sm xl:text-lg font-medium   text-[#555A65]    hover:bg-gray-100 rounded-md! transition-all duration-300   ">
+              class=" px-3 py-2 text-xs xl:text-lg font-medium   text-[#555A65] hover:bg-gray-100 rounded-md! transition-all duration-300   ">
               الرئيسية </a>
             <a routerLink="/About-Us" routerLinkActive="bg-gray-100 text-[#D0A51A] rounded-md"
-              class=" px-3 py-2 text-sm xl:text-lg font-medium  text-[#555A65]  hover:bg-gray-100 rounded-md! transition-all duration-300   ">من
+              class=" px-3 py-2 text-xs xl:text-lg font-medium  text-[#555A65]  hover:bg-gray-100 rounded-md! transition-all duration-300   ">من
               نحن </a>
             <a routerLink="/Services" routerLinkActive="bg-gray-100 text-[#D0A51A] rounded-md"
-              class=" px-3 py-2 text-sm xl:text-lg font-medium  text-[#555A65]  hover:bg-gray-100 rounded-md! transition-all duration-300   ">الخدمات
+              class=" px-3 py-2 text-xs xl:text-lg font-medium  text-[#555A65]  hover:bg-gray-100 rounded-md! transition-all duration-300   ">الخدمات
             </a>
             <a routerLink="/Projects" routerLinkActive="bg-gray-100 text-[#D0A51A] rounded-md"
-              class=" px-3 py-2 text-sm xl:text-lg font-medium  text-[#555A65]  hover:bg-gray-100 rounded-md! transition-all duration-300   ">المشاريع</a>
+              class=" px-3 py-2 text-xs xl:text-lg font-medium  text-[#555A65]  hover:bg-gray-100 rounded-md! transition-all duration-300   ">المشاريع</a>
             <a routerLink="/Jobs" routerLinkActive="bg-gray-100 text-[#D0A51A] rounded-md"
-              class=" px-3 py-2 text-sm xl:text-lg font-medium  text-[#555A65]  hover:bg-gray-100 rounded-md! transition-all duration-300   ">الوظائف
+              class=" px-3 py-2 text-xs xl:text-lg font-medium  text-[#555A65]  hover:bg-gray-100 rounded-md! transition-all duration-300   ">الوظائف
             </a>
             <a routerLink="/Blogs" routerLinkActive="bg-gray-100 text-[#D0A51A] rounded-md"
-              class=" px-3 py-2 text-sm xl:text-lg font-medium  text-[#555A65]  hover:bg-gray-100 rounded-md! transition-all duration-300   ">المقالات
+              class=" px-3 py-2 text-xs xl:text-lg font-medium  text-[#555A65]  hover:bg-gray-100 rounded-md! transition-all duration-300   ">المقالات
             </a>
             <!-- <a href="#" class="rounded-md px-3 py-2 text-sm font-medium text-[#555A65]  ">تواصل معنا </a> -->
           </div>
         </div>
         <div class="ml-4 hidden md:flex items-center">
-          <app-app-button btnText="تواصل معنا" routerLink="/contact-us"></app-app-button>
-
+          <app-app-button btnText="تواصل معنا" routerLink="/contact-us" customClass="text-sm w-full! lg:text-lg px-3! lg:px-5!  py-2.5 bg-[#00843D] text-white font-medium  rounded-xl flex items-center justify-center transition duration-300 cursor-pointer'"></app-app-button>
         </div>
       </div>
 
@@ -64,10 +63,10 @@
   </div>
   <!--! mobile -->
   @if (isMobileMenuOpen()) {
-  <div class="block md:hidden mt-4 bg-white rounded-2xl border shadow-lg">
+  <div class="block md:hidden mt-4 bg-white rounded-2xl shadow-lg">
     <div class="space-y-1 px-4 pt-4 pb-4">
       <a routerLink="/" (click)="closeMobileMenu()"
-        class="block rounded-md px-3 py-2 text-base font-medium text-[#440000] hover:bg-gray-100 transition-colors">الرئيسية</a>
+ class="block rounded-md px-3 py-2 text-base font-medium text-[#440000] hover:bg-gray-100 transition-colors">الرئيسية</a>
       <a routerLink="/About-Us" (click)="closeMobileMenu()"
         class="block rounded-md px-3 py-2 text-base font-medium text-[#440000] hover:bg-gray-100 transition-colors">من
         نحن</a>

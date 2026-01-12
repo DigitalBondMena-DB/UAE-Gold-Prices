@@ -1,9 +1,10 @@
 .clip {
-  transform: translateY(0%) perspective(500px) rotateY(10deg);
+  transform: translateY(0%) translateX(8%) perspective(500px) rotateY(10deg);
   border-radius: 25px !important;
 }
 
 /* Social Media Strip */
+
 .social-strip {
   position: absolute;
   right: 90%;
@@ -20,6 +21,61 @@
   padding:30px 30px;
   box-shadow: -4px 4px 15px rgba(0, 0, 0, 0.2);
 }
+
+
+
+
+@media (max-width: 1280px) {
+  .social-strip {
+    right: 85%;
+    top: 10%;
+  }
+}
+@media (max-width: 1024px) {
+  .social-strip {
+    right: 89%;
+    top: 15%;
+  }
+}
+@media (max-width: 685px) {
+  .social-strip {
+    right: 85%;
+    top: 16%;
+  }
+}
+@media (max-width: 570px) {
+  .social-strip {
+    right: 82%;
+    top: 16%;
+  }
+}
+@media (max-width: 485px) {
+  .social-strip {
+    right: 78%;
+    top: 16%;
+  }
+}
+@media (max-width: 405px) {
+  .social-strip {
+    right: 75%;
+    top: 16%;
+  }
+}
+@media (max-width: 375px) {
+  .social-strip {
+    right: 72%;
+    top: 16%;
+  }
+}
+
+
+
+/* @media (max-width: px) {
+  .social-strip {
+    right: 75%;
+    top: 16%;
+  }
+} */
 
 .social-icon {
   display: flex;

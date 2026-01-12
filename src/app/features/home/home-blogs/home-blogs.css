@@ -1,0 +1,22 @@
+.article-card {
+    transition: transform 0.3s ease;
+}
+
+.article-card:hover {
+    transform: translateY(-5px);
+}
+
+/* Category Badge - Top Right Corner */
+.category-badge {
+    position: absolute;
+    top: 0;
+    right: 0;
+    background: rgba(30, 30, 30, 0.85);
+    backdrop-filter: blur(4px);
+    color: #fff;
+    font-size: 0.95rem;
+    font-weight: 500;
+    padding: 10px 18px;
+    border-radius: 0 16px 0 16px;
+    z-index: 5;
+}

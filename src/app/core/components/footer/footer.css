@@ -1,0 +1,121 @@
+.footer {
+  direction: rtl;
+}
+
+/* Upper Section: Gold/Yellow Background with Palm Tree Pattern */
+.footer-upper {
+  background-color: #D4AF37;
+  position: relative;
+  overflow: hidden;
+}
+
+.footer-upper::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-image: 
+    url("data:image/svg+xml,%3Csvg width='120' height='120' xmlns='http://www.w3.org/2000/svg'%3E%3Cg opacity='0.15'%3E%3Cpath d='M60 15 L55 40 L48 32 L50 65 L60 58 L70 65 L72 32 L65 40 Z' fill='white'/%3E%3Cpath d='M60 15 L58 25 L62 25 Z' fill='white'/%3E%3C/g%3E%3C/svg%3E");
+  background-size: 150px 150px;
+  background-position: 0 0;
+  background-repeat: repeat;
+  opacity: 0.4;
+  pointer-events: none;
+}
+
+.footer-column {
+  display: flex;
+  flex-direction: column;
+  position: relative;
+  z-index: 1;
+}
+
+
+.footer-heading {
+  color: white;
+  font-weight: 600;
+  margin-bottom: 0.5rem;
+  position: relative;
+}
+
+.footer-frame {
+  width: 50px;
+  height: auto;
+  margin-bottom: 1rem;
+}
+
+
+
+
+
+.footer-links {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.footer-link {
+  color: white;
+  text-decoration: none;
+  /* font-size: 1rem; */
+  transition: opacity 0.3s ease;
+}
+
+.footer-link:hover {
+  opacity: 0.8;
+  text-decoration: underline;
+}
+
+.social-icon {
+  color: white;
+  transition: transform 0.3s ease, opacity 0.3s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.social-icon:hover {
+  transform: translateY(-2px);
+  opacity: 0.8;
+}
+
+/* Lower Section: Dark Brown Background */
+.footer-lower {
+  background-color: #3C2E00;
+}
+
+.footer-lower-link {
+  color: white;
+  text-decoration: underline;
+  font-size: 0.875rem;
+  transition: opacity 0.3s ease;
+}
+
+.footer-lower-link:hover {
+  opacity: 0.8;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .footer-upper {
+    padding-top: 2rem;
+    padding-bottom: 2rem;
+  }
+  
+  .footer-column {
+    margin-bottom: 2rem;
+  }
+  
+  .footer-logo-column {
+    text-align: center;
+  }
+  
+  .footer-logo-column .flex {
+    justify-content: center;
+  }
+}

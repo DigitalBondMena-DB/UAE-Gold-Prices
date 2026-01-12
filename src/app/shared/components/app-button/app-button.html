@@ -1,0 +1,16 @@
+@if (routerLink) {
+    <button
+        [routerLink]="routerLink"
+        [class]="customClass || 'px-5  py-2.5 bg-[#00843D] text-white font-medium text-lg rounded-xl flex items-center justify-center transition duration-300 cursor-pointer'">
+      {{ btnText }}
+    </button>
+  } @else {
+    <button
+        [disabled]="disabled"
+        (click)="onClick()"
+        [class]="customClass || 'px-6  py-3 bg-[#00843D] text-white font-medium text-lg rounded-xl flex items-center justify-center transition duration-300 cursor-pointer'"
+        [class.opacity-50]="disabled"
+        [class.cursor-not-allowed]="disabled">
+      {{ btnText }}
+    </button>
+  }

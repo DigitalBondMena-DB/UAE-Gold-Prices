@@ -1,0 +1,42 @@
+/* Hero Section Styles */
+.hero-section {
+    background: linear-gradient(135deg, #0a0a0a 0%, #1a1a1a 100%);
+}
+
+/* Hero Carousel Styles */
+.hero-carousel {
+    width: 100%;
+}
+
+.hero-carousel ::ng-deep .p-carousel-prev,
+.hero-carousel ::ng-deep .p-carousel-next {
+    color: white;
+    background: rgba(212, 175, 55, 0.3);
+    border-radius: 50%;
+    width: 2.5rem;
+    height: 2.5rem;
+}
+
+.hero-carousel ::ng-deep .p-carousel-prev:hover,
+.hero-carousel ::ng-deep .p-carousel-next:hover {
+    background: rgba(212, 175, 55, 0.6);
+}
+
+/* Card hover effects */
+.hero-carousel .group:hover img {
+    filter: brightness(0.9);
+}
+
+/* Gold color for title */
+.text-gold {
+    color: #D4AF37;
+}
+
+/* Card shadow on hover */
+.hero-carousel .group {
+    /* box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3); */
+}
+
+.hero-carousel .group:hover {
+    /* box-shadow: 0 8px 30px rgba(212, 175, 55, 0.15); */
+}

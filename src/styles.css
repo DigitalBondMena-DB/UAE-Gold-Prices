@@ -1,1 +1,34 @@
-/* You can add global styles to this file, and also import other style files */
+@import url('../public/fonts/fonts.css');
+@import "tailwindcss";
+
+
+
+
+
+body{
+    font-family: 'Tajawal', sans-serif;
+}
+
+h1, h2, h3, h4, h5, h6{
+    font-family: 'Markazi Text', serif;
+}
+
+
+/* ! scrollbar styling */
+::-webkit-scrollbar {
+    width: 5px;
+    height: 10px;
+}
+
+::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+    background: linear-gradient(to top, #014722, #00843D);
+    border-radius: 6px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: #940000;
+}

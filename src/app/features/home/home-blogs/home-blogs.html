@@ -1,0 +1,108 @@
+<section class="relative py-20 bg-[#FAFAFA]">
+    <div class="container mx-auto px-5 lg:px-20">
+        <!-- Header with title and learn more link -->
+        <div class="flex items-center justify-between mb-10">
+            <app-section-title [title]="'أحدث المقالات'"></app-section-title>
+            <a href="#" class="flex items-center gap-2 text-[#3C2E00] font-medium text-lg hover:text-[#D0A51A] transition-colors underline">
+                <span>معرفة المزيد</span>
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path>
+                </svg>
+            </a>
+           
+        </div>
+
+        <!-- Articles Grid -->
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            <!-- Article Card 1: Silver -->
+            <article class="article-card bg-white rounded-2xl overflow-hidden shadow-lg hover:shadow-xl transition-shadow duration-300">
+                <div class="relative">
+                    <img src="/images/blog.png" alt="Silver bars" 
+                        class="w-full h-64 object-cover" 
+                        width="400" height="256" />
+                    <!-- Category Badge -->
+                    <div class="category-badge">
+                        <span>أسعار الفضة</span>
+                    </div>
+                </div>
+                <div class="p-6">
+                    <div class="flex items-center gap-2 text-[#666] text-sm mb-4">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
+                        </svg>
+                        <span>٢٢ أكتوبر ٢٠٢٦</span>
+                    </div>
+                    <h4 class="text-[#3C2E00] font-bold text-xl mb-4 leading-relaxed">
+                        الفضة الصناعية: سرّ ارتفاع الطلب عالميًا
+                    </h4>
+                    <a routerLink="/articles/silver" class="text-[#00843D] font-medium text-base hover:underline inline-flex items-center gap-1">
+                        <span>اقرأ المقالة</span>
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
+                        </svg>
+                    </a>
+                </div>
+            </article>
+
+            <!-- Article Card 2: Gold -->
+            <article class="article-card bg-white rounded-2xl overflow-hidden shadow-lg hover:shadow-xl transition-shadow duration-300">
+                <div class="relative">
+                    <img src="/images/blog.png" alt="Gold bars" 
+                        class="w-full h-64 object-cover" 
+                        width="400" height="256" />
+                    <!-- Category Badge -->
+                    <div class="category-badge">
+                        <span>أسعار الذهب</span>
+                    </div>
+                </div>
+                <div class="p-6">
+                    <div class="flex items-center gap-2 text-[#666] text-sm mb-4">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
+                        </svg>
+                        <span>٢٢ أكتوبر ٢٠٢٦</span>
+                    </div>
+                    <h4 class="text-[#3C2E00] font-bold text-xl mb-4 leading-relaxed">
+                        توقعات أسعار الذهب في الإمارات لعام ٢٠٢٦
+                    </h4>
+                    <a routerLink="/articles/gold" class="text-[#00843D] font-medium text-base hover:underline inline-flex items-center gap-1">
+                        <span>اقرأ المقالة</span>
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
+                        </svg>
+                    </a>
+                </div>
+            </article>
+
+            <!-- Article Card 3: Platinum -->
+            <article class="article-card bg-white rounded-2xl overflow-hidden shadow-lg hover:shadow-xl transition-shadow duration-300">
+                <div class="relative">
+                    <img src="/images/blog.png" alt="Platinum bars" 
+                        class="w-full h-64 object-cover" 
+                        width="400" height="256" />
+                    <!-- Category Badge -->
+                    <div class="category-badge">
+                        <span>أسعار البلاتين</span>
+                    </div>
+                </div>
+                <div class="p-6">
+                    <div class="flex items-center gap-2 text-[#666] text-sm mb-4">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
+                        </svg>
+                        <span>٢٢ أكتوبر ٢٠٢٦</span>
+                    </div>
+                    <h4 class="text-[#3C2E00] font-bold text-xl mb-4 leading-relaxed">
+                        لماذا يُعد البلاتين فرصة استثمارية نادرة؟
+                    </h4>
+                    <a routerLink="/articles/platinum" class="text-[#00843D] font-medium text-base hover:underline inline-flex items-center gap-1">
+                        <span>اقرأ المقالة</span>
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
+                        </svg>
+                    </a>
+                </div>
+            </article>
+        </div>
+    </div>
+</section>

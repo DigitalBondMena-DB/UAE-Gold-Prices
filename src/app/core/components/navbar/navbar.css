@@ -1,0 +1,52 @@
+/* Navbar Styles */
+:host {
+  display: block;
+  width: 100%;
+}
+
+/* Dropdown hover delay for better UX */
+.group:hover .group-hover\:visible {
+  transition-delay: 0ms;
+}
+
+.group .group-hover\:visible {
+  transition-delay: 150ms;
+}
+
+/* Active link indicator */
+.nav-link.active {
+  position: relative;
+}
+
+.nav-link.active::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 20px;
+  height: 2px;
+  background: linear-gradient(90deg, #D0A51A, #B8941A);
+  border-radius: 1px;
+}
+
+/* Smooth scroll behavior */
+nav {
+  scroll-behavior: smooth;
+}
+
+/* Mobile menu animation */
+@keyframes slideDown {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.block.md\:hidden {
+  animation: slideDown 0.2s ease-out;
+}

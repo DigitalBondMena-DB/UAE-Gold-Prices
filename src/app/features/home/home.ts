@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { Component } from '@angular/core';
+import { Component, signal } from '@angular/core';
 import { Carousel } from 'primeng/carousel';
 import { HomeAbout } from "./home-about/home-about";
 import { HomeBlogs } from "./home-blogs/home-blogs";
@@ -18,6 +18,12 @@ interface CarouselItem {
   styleUrl: './home.css',
 })
 export class Home {
+  // Signal to track hovered carousel image
+  hoveredImage = signal<string | null>(null);
+  
+  // Default hero background
+  readonly defaultHeroImage = '/images/hero/hero.webp';
+
   carouselItems: CarouselItem[] = [
     { title: 'اتجاهات الذهب', image: '/images/hero/slider1.png' },
     { title: 'وقت الشراء؟', image: '/images/hero/slider2.png' },

@@ -1,0 +1,32 @@
+:host {
+  display: block;
+  width: 100%;
+}
+
+.hero-section {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Text shadow for better readability */
+h1 {
+  text-shadow: 0 2px 20px rgba(0, 0, 0, 0.3);
+}
+
+p {
+  text-shadow: 0 1px 10px rgba(0, 0, 0, 0.2);
+}
+
+/* Smooth image loading */
+img {
+  transition: opacity 0.3s ease;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .hero-section {
+    min-height: 90vh !important;
+  }
+}

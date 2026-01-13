@@ -1,0 +1,14 @@
+:host {
+  display: block;
+}
+
+/* White title variant for dark/colored backgrounds */
+:host-context(.white-title) h2,
+.white-title h2 {
+  color: white !important;
+}
+
+:host-context(.white-title) img,
+.white-title img {
+  filter: brightness(0) invert(1);
+}

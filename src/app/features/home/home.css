@@ -3,6 +3,32 @@
     background: linear-gradient(135deg, #0a0a0a 0%, #1a1a1a 100%);
 }
 
+/* Hero Background Images */
+.hero-bg-image {
+    transition: opacity 0.5s ease-in-out;
+    z-index: 0;
+}
+
+.hero-bg-hover {
+    z-index: 0;
+}
+
+/* Fade in animation for hovered background */
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: scale(1.05);
+    }
+    to {
+        opacity: 1;
+        transform: scale(1);
+    }
+}
+
+.animate-fade-in {
+    animation: fadeIn 0.5s ease-out forwards;
+}
+
 /* Hero Carousel Styles */
 .hero-carousel {
     width: 100%;

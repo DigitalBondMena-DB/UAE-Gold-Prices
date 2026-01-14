@@ -3,14 +3,14 @@
     <div class="overflow-hidden relative min-h-[90vh] h-full flex flex-col justify-center ">
         <!-- Default Background Image for LCP Optimization -->
         <img [src]="defaultHeroImage" alt="hero" 
-            class="hero-bg-image absolute inset-0 w-full h-full object-center object-cover"
-            [class.opacity-0]="hoveredImage()"
+            class="hero-bg-image absolute inset-0 w-full h-full object-center object-cover transition-all! duration-500!"
+            [class.opacity-0]="selectedImage()"
             width="1920" height="1080" fetchpriority="high" loading="eager" />
         
-        <!-- Hovered Background Image (appears on carousel hover) -->
-        @if (hoveredImage()) {
-            <img [src]="hoveredImage()" alt="hero hover" 
-                class="hero-bg-hover absolute inset-0 w-full h-full object-center object-cover animate-fade-in" />
+        <!-- Selected Background Image (appears on carousel click) -->
+        @if (selectedImage()) {
+            <img [src]="selectedImage()" alt="hero selected" 
+                class="hero-bg-hover absolute inset-0 w-full h-full object-center object-cover animate-fade-in transition-all! duration-500!" />
         }
         
         <!-- Dark Overlay -->
@@ -28,15 +28,18 @@
             </div>
 
             <!-- Carousel Section -->
-            <div class="hero-carousel mt-auto pb-10">
-                <p-carousel [value]="carouselItems" [numVisible]="4" [numScroll]="1"
+            <div class="hero-carousel mt-auto pb-10 "
+                (mouseenter)="pauseCarousel()"
+                (mouseleave)="resumeCarousel()">
+                <p-carousel #heroCarousel [value]="carouselItems" [numVisible]="4" [numScroll]="1"
                     [responsiveOptions]="responsiveOptions" [showIndicators]="false"
-                    [showNavigators]="false" [circular]="true" [autoplayInterval]="3000">
-                    <ng-template #item let-item>
+                    [showNavigators]="false" [circular]="true" [autoplayInterval]="5000"
+
+                    (onPage)="onPageChange($event)">
+                    <ng-template #item let-item let-i="index">
                         <div class="px-2 py-2">
-                            <div class="group relative overflow-hidden rounded-xl cursor-pointer transition-all duration-300 hover:scale-[1.02] h-48 md:h-56 lg:h-64"
-                                (mouseenter)="hoveredImage.set(item.image)"
-                                (mouseleave)="hoveredImage.set(null)">
+                            <div class="carousel-card group relative overflow-hidden rounded-xl cursor-pointer transition-all duration-300 h-48 md:h-56 lg:h-64"
+                                (click)="selectImage(item.image)">
                                 <!-- Card Image -->
                                 <img [src]="item.image" [alt]="item.title"
                                     class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110" />

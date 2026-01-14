@@ -1,68 +1,181 @@
 /* Hero Section Styles */
 .hero-section {
-    background: linear-gradient(135deg, #0a0a0a 0%, #1a1a1a 100%);
+  background: linear-gradient(135deg, #0a0a0a 0%, #1a1a1a 100%);
 }
 
 /* Hero Background Images */
 .hero-bg-image {
-    transition: opacity 0.5s ease-in-out;
-    z-index: 0;
+  transition: opacity 0.5s ease-in-out;
+  z-index: 0;
 }
 
 .hero-bg-hover {
-    z-index: 0;
+  z-index: 0;
 }
 
 /* Fade in animation for hovered background */
 @keyframes fadeIn {
-    from {
-        opacity: 0;
-        transform: scale(1.05);
-    }
-    to {
-        opacity: 1;
-        transform: scale(1);
-    }
+  from {
+    opacity: 0;
+    transform: scale(1.05);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
 }
 
 .animate-fade-in {
-    animation: fadeIn 0.5s ease-out forwards;
+  animation: fadeIn 0.5s ease-out forwards;
 }
 
 /* Hero Carousel Styles */
 .hero-carousel {
-    width: 100%;
+  width: 100%;
 }
 
 .hero-carousel ::ng-deep .p-carousel-prev,
 .hero-carousel ::ng-deep .p-carousel-next {
-    color: white;
-    background: rgba(212, 175, 55, 0.3);
-    border-radius: 50%;
-    width: 2.5rem;
-    height: 2.5rem;
+  color: white;
+  background: rgba(212, 175, 55, 0.3);
+  border-radius: 50%;
+  width: 2.5rem;
+  height: 2.5rem;
 }
 
 .hero-carousel ::ng-deep .p-carousel-prev:hover,
 .hero-carousel ::ng-deep .p-carousel-next:hover {
-    background: rgba(212, 175, 55, 0.6);
+  background: rgba(212, 175, 55, 0.6);
 }
 
 /* Card hover effects */
 .hero-carousel .group:hover img {
-    filter: brightness(0.9);
+  filter: brightness(0.9);
 }
 
 /* Gold color for title */
 .text-gold {
-    color: #D4AF37;
+  color: #d4af37;
 }
 
-/* Card shadow on hover */
-.hero-carousel .group {
-    /* box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3); */
+/* ============================================
+   Carousel Edge Effect - Half Circle Perspective
+   ============================================ */
+
+/* Allow overflow for 3D transforms to be visible */
+.hero-carousel ::ng-deep .p-carousel,
+.hero-carousel ::ng-deep .p-carousel-content,
+.hero-carousel ::ng-deep .p-carousel-items-content,
+.hero-carousel ::ng-deep .p-carousel-items-container {
+  overflow: visible !important;
 }
 
-.hero-carousel .group:hover {
-    /* box-shadow: 0 8px 30px rgba(212, 175, 55, 0.15); */
+/* Smooth transition for carousel items container */
+.hero-carousel ::ng-deep .p-carousel-items-content {
+  transition: transform 0.5s ease-in-out !important;
+}
+
+/* Ensure all carousel items maintain their transforms smoothly */
+.hero-carousel ::ng-deep .p-carousel-item {
+  transition: all 0.6s cubic-bezier(0.34, 1.56, 0.64, 1) !important;
+}
+
+/* Base card styling with smooth transition */
+.carousel-card {
+  transition: transform 0.6s cubic-bezier(0.34, 1.56, 0.64, 1), 
+              box-shadow 0.4s ease-out !important;
+  will-change: transform;
+}
+
+/* ============ Default style for ALL carousel cards ============ */
+/* Apply scale to ALL items by default, then override for first/last */
+.hero-carousel ::ng-deep .p-carousel-item .carousel-card {
+  transform: scale(0.8) perspective(800px) !important;
+  transform-origin: center center;
+  border-radius: 20px !important;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5) !important;
+}
+
+/* ============ First Visible Item (Right side in RTL) ============ */
+/* Using class selector */
+.hero-carousel ::ng-deep .p-carousel-item.p-carousel-item-start .carousel-card {
+  transform: translateX(0) perspective(800px) rotateY(20deg) !important;
+  transform-origin: left center;
+  border-radius: 20px !important;
+  box-shadow: 12px 8px 35px rgba(0, 0, 0, 0.7) !important;
+}
+
+/* Using data attribute selector */
+.hero-carousel ::ng-deep .p-carousel-item[data-p-carousel-item-start='true'] .carousel-card {
+  transform: translateX(0) perspective(800px) rotateY(20deg) !important;
+  transform-origin: left center;
+  border-radius: 20px !important;
+  box-shadow: 12px 8px 35px rgba(0, 0, 0, 0.7) !important;
+}
+
+/* ============ Second Item (slight right tilt) ============ */
+/* CSS-only approach using PrimeNG's built-in classes */
+.hero-carousel
+  ::ng-deep
+  .p-carousel-item.p-carousel-item-start
+  + .p-carousel-item-active:not(.p-carousel-item-end)
+  .carousel-card {
+  transform: scale(0.8) perspective(800px) rotateY(10deg) !important;
+  transform-origin: center center;
+  border-radius: 20px !important;
+  box-shadow: 6px 4px 20px rgba(0, 0, 0, 0.5) !important;
+}
+
+/* Alternative for data attribute */
+.hero-carousel
+  ::ng-deep
+  .p-carousel-item[data-p-carousel-item-start='true']
+  + .p-carousel-item-active:not([data-p-carousel-item-end='true'])
+  .carousel-card {
+  transform: scale(0.8) perspective(800px) rotateY(10deg) !important;
+  transform-origin: center center;
+  border-radius: 20px !important;
+  box-shadow: 6px 4px 20px rgba(0, 0, 0, 0.5) !important;
+}
+
+/* ============ Third Item (slight left tilt) ============ */
+/* CSS-only approach - item before the end item */
+.hero-carousel
+  ::ng-deep
+  .p-carousel-item-active:not(.p-carousel-item-start):has(+ .p-carousel-item-end)
+  .carousel-card {
+  transform: scale(0.8) perspective(800px) rotateY(-10deg) !important;
+  transform-origin: center center;
+  border-radius: 20px !important;
+  box-shadow: -6px 4px 20px rgba(0, 0, 0, 0.5) !important;
+}
+
+/* Alternative for browsers supporting :has() with data attributes */
+.hero-carousel
+  ::ng-deep
+  .p-carousel-item-active:not([data-p-carousel-item-start='true']):has(
+      + .p-carousel-item[data-p-carousel-item-end='true']
+    )
+  .carousel-card {
+  transform: scale(0.8) perspective(800px) rotateY(-10deg) !important;
+  transform-origin: center center;
+  border-radius: 20px !important;
+  box-shadow: -6px 4px 20px rgba(0, 0, 0, 0.5) !important;
+}
+
+/* ============ Last Visible Item (Left side in RTL) ============ */
+/* Using class selector */
+.hero-carousel ::ng-deep .p-carousel-item.p-carousel-item-end .carousel-card {
+  transform: translateX(0%) perspective(800px) rotateY(-20deg) !important;
+  transform-origin: right center;
+  border-radius: 20px !important;
+  box-shadow: -12px 8px 35px rgba(0, 0, 0, 0.7) !important;
+}
+
+/* Using data attribute selector */
+.hero-carousel ::ng-deep .p-carousel-item[data-p-carousel-item-end='true'] .carousel-card {
+  transform: translateX(0%) perspective(800px) rotateY(-20deg) !important;
+  transform-origin: right center;
+  border-radius: 20px !important;
+  box-shadow: -12px 8px 35px rgba(0, 0, 0, 0.7) !important;
 }

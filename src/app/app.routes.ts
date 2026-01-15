@@ -36,6 +36,12 @@ export const routes: Routes = [
             {
                 path: 'contact-us',
                 loadComponent: () => import('./features/contact-us/contact-us').then(m => m.ContactUs),
+                children: [
+                    {
+                        path: 'done',
+                        loadComponent: () => import('./features/contact-us/contact-success/contact-success').then(m => m.ContactSuccess),
+                    },
+                ],
             },
             {
                 path: 'privacy-policy',

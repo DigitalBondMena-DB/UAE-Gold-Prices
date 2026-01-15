@@ -1,0 +1,35 @@
+<!-- Success Popup Overlay -->
+<div class="success-overlay" (click)="closeAndGoBack()">
+    <div class="success-popup mx-auto max-w-5xl" (click)="$event.stopPropagation()">
+        <!-- Close button -->
+        <button class="close-btn" (click)="closeAndGoBack()">
+            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+            </svg>
+        </button>
+
+        <!-- Decorative pattern background -->
+        <div class="popup-pattern"></div>
+
+        <!-- Content -->
+        <div class="popup-content">
+            <!-- Logo -->
+            <div class="popup-logo">
+                <img src="/images/logo/logo.webp" alt="أسعار الذهب في الإمارات" class="w-36" />
+            </div>
+
+            <!-- Title -->
+            <h1 class="popup-title">شكرا لتواصلك معنا!</h1>
+
+            <!-- Description -->
+            <p class="popup-description max-w-2xl mx-auto font-medium text-[#1C1C1C] ">
+                نشكركم على تواصلكم مع أسعار الذهب في الإمارات، سيراجع فريقنا رسالتكم ويتواصل معكم في أقرب وقت ممكن.
+            </p>
+
+            <!-- Home button -->
+            <button type="button" class="popup-home-btn" (click)="goToHome()">
+                العودة إلى الصفحة الرئيسية
+            </button>
+        </div>
+    </div>
+</div>

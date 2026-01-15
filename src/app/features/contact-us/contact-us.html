@@ -1,1 +1,184 @@
-<p>contact-us works!</p>
+<app-hero-section [title]="bannerSection()?.title ?? 'تواصل معنا - أسعار وتحليلات المعادن'"
+    [subtitle]="bannerSection()?.text ?? 'من تحديثات الأسعار اليومية إلى المقالات المتخصصة حول أسواق المعادن، نحن على بُعد رسالة واحدة فقط.'"
+    [backgroundImage]="bannerSection()?.main_image ?? ''">
+</app-hero-section>
+
+<!-- Contact Section -->
+<section class="contact-section py-16 lg:py-24 bg-white">
+    <div class="container mx-auto px-5 lg:px-20">
+        <div class="flex flex-col lg:flex-row gap-12 lg:gap-16 items-center">
+            <!-- Right Side - Contact Form -->
+            <div class="contact-form-side w-full lg:w-1/2 mb-10 lg:mb-0">
+                <!-- Section Title -->
+                <app-section-title title="تواصل معنا" customClass="mb-8 justify-end"></app-section-title>
+
+                <!-- Contact Form -->
+                <form [formGroup]="contactForm" (ngSubmit)="onSubmit()" class="space-y-6">
+                    <!-- Full Name Input -->
+                    <div class="form-field">
+                        <label for="name" class="block text-right text-gray-700 font-medium mb-2">الاسم بالكامل</label>
+                        <input pInputText id="name" formControlName="name" class="w-full" placeholder="اكتب اسمك هنا"
+                            (input)="onNameInput($event)" [class.ng-invalid]="nameInvalid"
+                            [class.ng-dirty]="nameInvalid" />
+                        <small class="error-message" [class.visible]="contactForm.get('name')?.touched && contactForm.get('name')?.errors">
+                            @if (contactForm.get('name')?.touched && contactForm.get('name')?.errors) {
+                                @if (contactForm.get('name')?.errors?.['required']) {
+                                    يرجى إدخال الاسم
+                                } @else if (contactForm.get('name')?.errors?.['minlength']) {
+                                    الاسم يجب أن يكون حرفين على الأقل
+                                } @else if (contactForm.get('name')?.errors?.['maxlength']) {
+                                    الاسم يجب ألا يتجاوز 20 حرفاً
+                                } @else if (contactForm.get('name')?.errors?.['pattern']) {
+                                    الاسم يجب أن يحتوي على حروف فقط بدون أرقام
+                                }
+                            }
+                        </small>
+                    </div>
+
+                    <!-- Email Input -->
+                    <div class="form-field">
+                        <label for="email" class="block text-right text-gray-700 font-medium mb-2">البريد الالكتروني</label>
+                        <input pInputText id="email" formControlName="email" type="email" class="w-full"
+                            placeholder="اكتب بريدك الالكتروني هنا" [class.ng-invalid]="emailInvalid"
+                            [class.ng-dirty]="emailInvalid" />
+                        <small class="error-message" [class.visible]="emailInvalid">
+                            @if (emailInvalid) {
+                                يرجى إدخال بريد الكتروني صحيح
+                            }
+                        </small>
+                    </div>
+
+                    <!-- Phone Input with Country Selector -->
+                    <div class="form-field">
+                        <label for="phone" class="block text-right text-gray-700 font-medium mb-2">رقم الجوال</label>
+                        <div class="phone-input-wrapper">
+                            <!-- Phone Number Input (Left Side) -->
+                            <input pInputText id="phone" formControlName="phone" type="tel"
+                                class="phone-number-input" [placeholder]="selectedCountry().placeholder"
+                                [maxlength]="selectedCountry().phoneValidation.maxLength"
+                                (input)="onPhoneInput($event)"
+                                [class.ng-invalid]="phoneInvalid"
+                                [class.ng-dirty]="phoneInvalid" />
+                            <!-- Country Selector (Right Side) -->
+                            <div class="country-selector-wrapper" (click)="toggleCountryDropdown()">
+                                <div class="country-selected-display">
+                                    <svg class="dropdown-chevron" width="12" height="12" viewBox="0 0 12 12" fill="none">
+                                        <path d="M2.5 4.5L6 8L9.5 4.5" stroke="#6B7280" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+                                    </svg>
+                                    <span class="country-dial-code">{{ selectedCountry().dialCode }}</span>
+                                    <img [src]="selectedCountry().flagUrl" [alt]="selectedCountry().nameAr" class="country-flag-img" />
+                                </div>
+                            </div>
+                            <!-- Country Dropdown List -->
+                            @if (showCountryDropdown()) {
+                            <div class="country-dropdown-panel">
+                                <div class="country-dropdown-list">
+                                    @for (country of countries; track country.code) {
+                                    <div class="country-option" 
+                                         [class.selected]="country.code === selectedCountry().code"
+                                         (click)="selectCountry(country)">
+                                        <img [src]="country.flagUrl" [alt]="country.nameAr" class="country-flag-img" />
+                                        <span class="country-name">{{ country.nameAr }}</span>
+                                        <span class="country-dial-code-option">{{ formatDialCode(country.dialCode) }}</span>
+                                    </div>
+                                    }
+                                </div>
+                            </div>
+                            }
+                            <!-- Hidden input for form value -->
+                            <input type="hidden" formControlName="countryCode" />
+                        </div>
+                        <small class="error-message" [class.visible]="phoneInvalid">
+                            @if (phoneInvalid) {
+                                {{ phoneErrorMessage }}
+                            }
+                        </small>
+                    </div>
+
+                    <!-- Message Textarea -->
+                    <div class="form-field">
+                        <label for="message" class="block text-right text-gray-700 font-medium mb-2">الرسالة</label>
+                        <textarea pTextarea id="message" formControlName="message" rows="5" class="w-full resize-none"
+                            placeholder="اكتب رسالتك هنا..." [class.ng-invalid]="messageInvalid"
+                            [class.ng-dirty]="messageInvalid"></textarea>
+                        <small class="error-message" [class.visible]="messageInvalid">
+                            @if (messageInvalid) {
+                                يرجى إدخال رسالة (10 أحرف على الأقل)
+                            }
+                        </small>
+                    </div>
+
+
+                    <!-- Error Message -->
+                    <div class="submit-error-container" [class.visible]="submitError()">
+                        @if (submitError()) {
+                        <div class="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-lg text-right">
+                            <span class="font-medium">{{ submitError() }}</span>
+                        </div>
+                        }
+                    </div>
+
+                    <!-- Submit Button -->
+                    <button type="submit"
+                        class="submit-btn w-full py-4 px-8 rounded-xl text-white font-semibold text-lg transition-all duration-300"
+                        [disabled]="isSubmitting()" [class.opacity-70]="isSubmitting()">
+                        @if (isSubmitting()) {
+                        <span class="flex items-center justify-center gap-2">
+                            <svg class="animate-spin h-5 w-5" fill="none" viewBox="0 0 24 24">
+                                <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor"
+                                    stroke-width="4"></circle>
+                                <path class="opacity-75" fill="currentColor"
+                                    d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z">
+                                </path>
+                            </svg>
+                            <span>جاري الإرسال...</span>
+                        </span>
+                        } @else {
+                        أرسل الرسالة
+                        }
+                    </button>
+                </form>
+            </div>
+            <!-- Left Side - Logo with Orbital Circles -->
+            <div class="w-full lg:w-1/2 flex items-center justify-center py-12">
+                <div class="orbital-container">
+                    <!-- Outer dotted circle -->
+                    <div class="orbital-circle outer-circle"></div>
+                    <!-- Inner dotted circle -->
+                    <div class="orbital-circle inner-circle"></div>
+                    <!-- Center logo -->
+                    <div class="center-logo">
+                        <img src="/images/contact-logo.webp" alt="contact-logo" />
+                    </div>
+                    <!-- Email bubble -->
+                    <div class="contact-bubble email-bubble">
+                        <div class="bubble-icon flex flex-col items-center justify-center">
+                            <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z">
+                                </path>
+                            </svg>
+                            <span class="bubble-text">{{ contactInfo()?.email ?? 'fslfksf@gmail.com' }}</span>
+                        </div>
+                    </div>
+                    <!-- Phone bubble -->
+                    <div class="contact-bubble phone-bubble">
+                        <div class="bubble-icon flex flex-col items-center justify-center">
+                            <svg class="w-5 h-5 text-white mb-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z">
+                                </path>
+                            </svg>
+                            <span class="bubble-text">{{ contactInfo()?.phone ?? '+10100100234' }}</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+
+        </div>
+    </div>
+</section>
+
+<!-- Child route outlet for success popup -->
+<router-outlet></router-outlet>

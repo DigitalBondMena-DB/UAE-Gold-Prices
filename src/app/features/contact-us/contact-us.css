@@ -1,0 +1,605 @@
+:host {
+  display: block;
+  width: 100%;
+}
+
+/* ============================================
+   Contact Section Styles
+============================================ */
+.contact-section {
+  background: linear-gradient(180deg, #FFFFFF 0%, #FAFAF7 100%);
+}
+
+/* ============================================
+   Orbital Design with Dotted Circles
+============================================ */
+.orbital-container {
+  position: relative;
+  width: 320px;
+  height: 320px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Dotted circles */
+.orbital-circle {
+  position: absolute;
+  border-radius: 50%;
+  border: 2px dashed #D0A51A;
+}
+
+.outer-circle {
+  width: 100%;
+  height: 100%;
+  opacity: 0.5;
+  animation: rotate-clockwise 20s linear infinite;
+}
+
+.inner-circle {
+  width: 75%;
+  height: 75%;
+  opacity: 0.7;
+  animation: rotate-counter-clockwise 15s linear infinite;
+}
+
+/* Orbital rotation animations */
+@keyframes rotate-clockwise {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@keyframes rotate-counter-clockwise {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* Center logo */
+.center-logo {
+  width: 140px;
+  height: 140px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  z-index: 10;
+}
+
+.center-logo img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
+
+/* Contact bubbles */
+.contact-bubble {
+  position: absolute;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  z-index: 20;
+}
+
+.bubble-icon {
+  width: 120px;
+  height: 120px;
+  border-radius: 50%;
+  background: linear-gradient(145deg, #D0A51A 0%, #B8930F 100%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 4px 15px rgba(208, 165, 26, 0.4);
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.bubble-icon:hover {
+  transform: scale(1.1);
+  box-shadow: 0 6px 20px rgba(208, 165, 26, 0.5);
+}
+
+.bubble-text {
+  font-size: 0.75rem;
+  color: #FFFFFF;
+  font-weight: 500;
+  white-space: wrap;
+  direction: ltr;
+  line-clamp: 2;
+}
+
+/* Email bubble - top left */
+.email-bubble {
+  top: -85px;
+  left: 55px;
+}
+
+/* Phone bubble - bottom right */
+.phone-bubble {
+  bottom: 40px;
+  right: -45px;
+}
+
+/* ============================================
+   Form Styles
+============================================ */
+.form-field {
+  direction: rtl;
+  position: relative;
+  margin-bottom: 0.5rem;
+  min-height: 85px; /* Reserve space for label + input + error message */
+}
+
+/* Error messages container - always reserve space to prevent layout shift */
+.error-message {
+  display: block;
+  height: 20px;
+  margin-top: 0.15rem;
+  line-height: 1.4;
+  text-align: right;
+  color: #EF4444;
+  font-size: 0.875rem;
+  font-weight: 600;
+  visibility: hidden;
+  opacity: 0;
+  transition: opacity 0.2s ease, visibility 0.2s ease;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* Show error message when visible class is applied */
+.error-message.visible {
+  visibility: visible;
+  opacity: 1;
+  height: 20px;
+  /* min-height: 20px; */
+  max-height: 20px;
+  white-space: normal;
+}
+
+/* Submit error container - fixed height to prevent layout shift */
+.submit-error-container {
+  min-height: 0;
+  max-height: 0;
+  overflow: hidden;
+  transition: max-height 0.3s ease, opacity 0.3s ease;
+  opacity: 0;
+}
+
+.submit-error-container.visible {
+  min-height: auto;
+  max-height: 200px;
+  opacity: 1;
+  margin-bottom: 1rem;
+}
+
+/* ============================================
+   Phone Input with Country Selector
+============================================ */
+.phone-input-wrapper {
+  display: flex;
+  flex-direction: row;
+  align-items: stretch;
+  border: 1.5px solid #E5E7EB;
+  border-radius: 12px;
+  overflow: visible;
+  background: #FFFFFF;
+  transition: all 0.3s ease;
+  position: relative;
+}
+
+.phone-input-wrapper:hover {
+  border-color: #D0A51A;
+}
+
+.phone-input-wrapper:focus-within {
+  border-color: #00843D;
+  box-shadow: 0 0 0 3px rgba(0, 132, 61, 0.1);
+  background: #FFFFFF;
+}
+
+/* Phone Number Input - Left Side */
+.phone-number-input {
+  flex: 1;
+  border: none !important;
+  border-radius: 0 !important;
+  background: transparent !important;
+  box-shadow: none !important;
+  direction: ltr;
+  text-align: left;
+  padding: 1rem 1.25rem !important;
+  font-size: 1rem;
+  color: #374151;
+}
+
+.phone-number-input::placeholder {
+  color: #9CA3AF;
+  font-family: 'Inter', sans-serif;
+}
+
+.phone-number-input:focus {
+  box-shadow: none !important;
+  outline: none !important;
+}
+
+/* Country Selector Wrapper - Custom Display */
+.country-selector-wrapper {
+  display: flex;
+  align-items: center;
+  padding: 0 1rem;
+  border-right: 1.5px solid #E5E7EB;
+  /* background: #FFFFFF; */
+  cursor: pointer;
+  transition: background 0.2s ease;
+  min-width: 120px;
+}
+
+
+
+.country-selected-display {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  direction: ltr;
+}
+
+.dropdown-chevron {
+  flex-shrink: 0;
+}
+
+/* Country Selected Display */
+.country-selected {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  direction: ltr;
+  flex-direction: row-reverse;
+}
+
+.country-flag-img {
+  width: 24px;
+  height: 16px;
+  object-fit: cover;
+  border-radius: 2px;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+}
+
+.country-dial-code {
+  font-size: 0.9375rem;
+  color: #374151;
+  font-weight: 500;
+ font-family: 'Tajawal', sans-serif;
+  direction: ltr;
+}
+
+/* Country Dropdown Panel - Custom */
+.country-dropdown-panel {
+  position: absolute;
+  top: 100%;
+  right: 0;
+  left: 0;
+  margin-top: 4px;
+  background: #FFFFFF;
+  border: 1px solid #E5E7EB;
+  border-radius: 12px;
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.15);
+  z-index: 1000;
+  direction: rtl;
+  font-weight: 500;
+}
+
+.country-dropdown-list {
+  max-height: 280px;
+  overflow-y: auto;
+  overflow-x: hidden;
+  padding: 0.5rem 0;
+  border-radius: 12px;
+  padding-right: 0.5rem;
+  padding-left: 0.5rem;
+}
+
+/* Scrollbar styling - inside the box */
+.country-dropdown-list::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+/* Completely hide scrollbar arrows/buttons */
+.country-dropdown-list::-webkit-scrollbar-button {
+  display: none !important;
+  width: 0 !important;
+  height: 0 !important;
+  background: transparent !important;
+}
+
+.country-dropdown-list::-webkit-scrollbar-button:start:decrement,
+.country-dropdown-list::-webkit-scrollbar-button:end:increment {
+  display: none !important;
+}
+
+/* Hide scrollbar corner */
+.country-dropdown-list::-webkit-scrollbar-corner {
+  display: none !important;
+  background: transparent !important;
+}
+
+.country-dropdown-list::-webkit-scrollbar-track {
+  background: transparent;
+  margin: 0.5rem 0;
+}
+
+.country-dropdown-list::-webkit-scrollbar-thumb {
+  background: #DC2626;
+  border-radius: 3px;
+  min-height: 30px;
+}
+
+.country-dropdown-list::-webkit-scrollbar-thumb:hover {
+  background: #B91C1C;
+}
+
+/* Firefox scrollbar - thin removes arrows */
+.country-dropdown-list {
+  scrollbar-width: thin;
+  scrollbar-color: #DC2626 transparent;
+}
+
+/* Country Option in Dropdown */
+.country-option {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  direction: rtl;
+  padding: 0.75rem 1rem;
+  cursor: pointer;
+  transition: background 0.15s ease;
+  margin: 0 4px;
+  border-bottom: 1px solid #F3F4F6;
+  margin-block: 4px;
+}
+
+.country-option:last-child {
+  border-bottom: none;
+}
+
+.country-option:hover {
+  background: #F3F4F6;
+  border-radius: 8px;
+}
+
+.country-option.selected {
+  background: #F3F4F6;
+  border-radius: 8px;
+}
+
+.country-option.selected .country-name,
+.country-option.selected .country-dial-code-option {
+  color: #00843D;
+  font-weight: 500;
+}
+
+.country-option .country-flag-img {
+  width: 28px;
+  height: 20px;
+  border-radius: 3px;
+  flex-shrink: 0;
+}
+
+.country-name {
+  flex: 1;
+  font-size: 0.9375rem;
+  color: #1F2937;
+  font-family: 'Tajawal', sans-serif;
+  text-align: right;
+}
+
+.country-dial-code-option {
+  font-size: 0.875rem;
+  color: #6B7280;
+  font-family: 'Inter', sans-serif;
+  direction: ltr;
+  font-weight: 500;
+}
+
+/* PrimeNG Input Styling */
+:host ::ng-deep .p-inputtext,
+:host ::ng-deep .p-textarea {
+  width: 100%;
+  padding: 1rem 1.25rem;
+  border: 1.5px solid #E5E7EB;
+  border-radius: 12px;
+  font-family: 'Tajawal', sans-serif;
+  font-size: 1rem;
+  transition: all 0.3s ease;
+  background: #FAFAFA;
+  direction: rtl;
+  text-align: right;
+}
+
+:host ::ng-deep .p-inputtext:hover,
+:host ::ng-deep .p-textarea:hover {
+  border-color: #D0A51A;
+}
+
+:host ::ng-deep .p-inputtext:focus,
+:host ::ng-deep .p-textarea:focus {
+  border-color: #00843D;
+  box-shadow: 0 0 0 3px rgba(0, 132, 61, 0.1);
+  outline: none;
+  background: #FFFFFF;
+}
+
+:host ::ng-deep .p-inputtext.ng-invalid.ng-dirty,
+:host ::ng-deep .p-textarea.ng-invalid.ng-dirty {
+  border-color: #EF4444;
+}
+
+:host ::ng-deep .p-inputtext.ng-invalid.ng-dirty:focus,
+:host ::ng-deep .p-textarea.ng-invalid.ng-dirty:focus {
+  box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.1);
+}
+
+/* Placeholder Styling */
+:host ::ng-deep .p-inputtext::placeholder,
+:host ::ng-deep .p-textarea::placeholder {
+  color: #9CA3AF;
+  font-family: 'Tajawal', sans-serif;
+}
+
+/* Textarea specific */
+:host ::ng-deep .p-textarea {
+  min-height: 140px;
+  resize: none;
+}
+
+/* ============================================
+   Submit Button
+============================================ */
+.submit-btn {
+  background: linear-gradient(135deg, #00843D 0%, #006d32 50%, #00572a 100%);
+  border: none;
+  cursor: pointer;
+  position: relative;
+  overflow: hidden;
+}
+
+.submit-btn::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+  transition: left 0.5s ease;
+}
+
+.submit-btn:hover::before {
+  left: 100%;
+}
+
+.submit-btn:hover {
+  background: linear-gradient(135deg, #00843D 0%, #006d32 50%, #00572a 100%);
+  transform: translateY(-2px);
+  box-shadow: 0 8px 25px rgba(208, 165, 26, 0.4);
+}
+
+.submit-btn:active {
+  transform: translateY(0);
+}
+
+.submit-btn:disabled {
+  cursor: not-allowed;
+  transform: none;
+}
+
+.submit-btn:disabled:hover::before {
+  left: -100%;
+}
+
+/* ============================================
+   Responsive Adjustments
+============================================ */
+/* @media (max-width: 1024px) {
+  .orbital-container {
+    width: 280px;
+    height: 280px;
+  }
+  
+  .center-logo {
+    width: 120px;
+    height: 120px;
+  }
+  
+  .bubble-icon {
+    width: 45px;
+    height: 45px;
+  }
+  
+  .email-bubble {
+    top: -5px;
+    left: 10px;
+  }
+  
+  .phone-bubble {
+    bottom: 15px;
+    right: -10px;
+  }
+}
+
+@media (max-width: 768px) {
+  .orbital-container {
+    width: 260px;
+    height: 260px;
+  }
+  
+  .center-logo {
+    width: 100px;
+    height: 100px;
+  }
+  
+  .bubble-icon {
+    width: 40px;
+    height: 40px;
+  }
+  
+  .bubble-icon svg {
+    width: 18px;
+    height: 18px;
+  }
+  
+  .bubble-text {
+    font-size: 0.65rem;
+  }
+  
+  .email-bubble {
+    top: 0;
+    left: 15px;
+  }
+  
+  .phone-bubble {
+    bottom: 20px;
+    right: 0;
+  }
+
+  :host ::ng-deep .p-inputtext,
+  :host ::ng-deep .p-textarea {
+    padding: 0.875rem 1rem;
+    font-size: 0.9375rem;
+  }
+
+  .submit-btn {
+    padding: 1rem 1.5rem;
+    font-size: 1rem;
+  }
+} */
+
+@media (max-width: 480px) {
+  .orbital-container {
+    width: 260px;
+    height: 260px;
+  }
+  
+  .center-logo {
+    width: 80px;
+    height: 80px;
+  }
+  
+  .bubble-icon {
+    width: 100px;
+    height: 100px;
+  }
+  
+  .bubble-text {
+    font-size: 0.6rem;
+  }
+}

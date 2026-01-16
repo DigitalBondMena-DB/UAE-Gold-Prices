@@ -2,6 +2,7 @@ import { CommonModule, isPlatformBrowser } from '@angular/common';
 import { Component, computed, effect, ElementRef, HostListener, inject, OnDestroy, OnInit, PLATFORM_ID, signal, viewChild } from '@angular/core';
 import { Router } from '@angular/router';
 import { Carousel, CarouselPageEvent } from 'primeng/carousel';
+import { Skeleton } from 'primeng/skeleton';
 import { API_END_POINTS } from '../../core/constant/ApiEndPoints';
 import { AboutHome, BannerSection, Department, HeroSlide, HomeResponse, LatestBlog } from '../../core/models/home.model';
 import { ApiService } from '../../core/services/api-service';
@@ -19,7 +20,7 @@ interface CarouselItem {
 
 @Component({
   selector: 'app-home',
-  imports: [CommonModule, HomeAbout, HomeCategories, HomeCalculator, HomeBlogs, Carousel],
+  imports: [CommonModule, HomeAbout, HomeCategories, HomeCalculator, HomeBlogs, Carousel, Skeleton],
   templateUrl: './home.html',
   styleUrl: './home.css',
 })
@@ -58,6 +59,12 @@ export class Home implements OnInit, OnDestroy {
       }, 10);
     }
   });
+
+  // Loading state signal
+  isLoading = signal(true);
+  
+  // Track if carousel images are preloaded
+  imagesLoaded = signal(false);
 
   // API Data Signals
   homeData = signal<HomeResponse | null>(null);
@@ -172,9 +179,59 @@ export class Home implements OnInit, OnDestroy {
       next: (response) => {
         if (response) {
           this.homeData.set(response);
+          
+          // Preload carousel images before showing
+          if (isPlatformBrowser(this.platformId)) {
+            this.preloadCarouselImages(response.heroSection ?? []);
+          } else {
+            // On server, keep loading true to show skeleton
+            this.isLoading.set(true);
+          }
         }
+      },
+      error: () => {
+        this.isLoading.set(false);
       }
     });
+  }
+
+  // Preload carousel images to prevent layout shift
+  private preloadCarouselImages(slides: HeroSlide[]): void {
+    if (slides.length === 0) {
+      this.isLoading.set(false);
+      return;
+    }
+
+    const imageUrls = slides.map(slide => slide.main_image);
+    let loadedCount = 0;
+    const totalImages = Math.min(imageUrls.length, 4); // Preload only first 4 visible images
+
+    imageUrls.slice(0, totalImages).forEach(url => {
+      const img = new Image();
+      img.onload = () => {
+        loadedCount++;
+        if (loadedCount >= totalImages) {
+          this.imagesLoaded.set(true);
+          this.isLoading.set(false);
+        }
+      };
+      img.onerror = () => {
+        loadedCount++;
+        if (loadedCount >= totalImages) {
+          this.imagesLoaded.set(true);
+          this.isLoading.set(false);
+        }
+      };
+      img.src = url;
+    });
+
+    // Fallback timeout to prevent infinite loading
+    setTimeout(() => {
+      if (this.isLoading()) {
+        this.imagesLoaded.set(true);
+        this.isLoading.set(false);
+      }
+    }, 5000);
   }
 
   // Check if item is first visible

@@ -19,6 +19,7 @@ import {
   RelatedBlog,
 } from '../../core/models/blog-details.model';
 import { ApiService } from '../../core/services/api-service';
+import { SeoService } from '../../core/services/seo.service';
 import { SafeHtmlPipe } from '../../shared/pipes/safe-html.pipe';
 
 interface Section {
@@ -37,11 +38,12 @@ interface Section {
   encapsulation: ViewEncapsulation.None,
 })
 export class BlogDet {
-  private apiService = inject(ApiService);
-  private router = inject(Router);
-  private sanitizer = inject(DomSanitizer);
-  private platformId = inject(PLATFORM_ID);
-  private ngZone = inject(NgZone);
+  private readonly apiService = inject(ApiService);
+  private readonly router = inject(Router);
+  private readonly sanitizer = inject(DomSanitizer);
+  private readonly platformId = inject(PLATFORM_ID);
+  private readonly ngZone = inject(NgZone);
+  private readonly seoService = inject(SeoService);
 
   isBrowser = isPlatformBrowser(this.platformId);
 
@@ -229,6 +231,7 @@ export class BlogDet {
         if (response?.blog) {
           this.blog.set(response.blog);
           this.relatedBlogs.set(response.related_blogs ?? []);
+          this.setSeoTags(response.blog);
         }
         this.isLoading.set(false);
       },
@@ -331,5 +334,35 @@ export class BlogDet {
   getResponsiveImageFromObject(img: { desktop?: string; mobile?: string } | null): string {
     if (!img) return '/images/placeholder.png';
     return img.desktop ?? img.mobile ?? '/images/placeholder.png';
+  }
+
+  private setSeoTags(blog: BlogDetail): void {
+    const stripHtml = (html: string): string => {
+      return html.replace(/<[^>]*>/g, '').trim();
+    };
+
+    // Use API meta description if available, otherwise generate from content
+    const description = blog.meta_description
+      ?? (blog.small_text
+        ? stripHtml(blog.small_text).substring(0, 160)
+        : stripHtml(blog.text ?? '').substring(0, 160));
+
+    const image = typeof blog.main_image === 'string'
+      ? blog.main_image
+      : Array.isArray(blog.main_image)
+        ? blog.main_image[0]
+        : undefined;
+
+    // Use API meta title if available, otherwise use blog title
+    const title = blog.meta_title ?? blog.title;
+
+    this.seoService.updateMetaTags({
+      title: title,
+      description: description + (blog.meta_description ? '' : '...'),
+      keywords: `${blog.title}, مقالات الذهب, أخبار الذهب, ${blog.small_text ?? ''}`,
+      canonicalUrl: `${this.seoService.getSiteUrl()}/blog/${blog.slug}`,
+      ogType: 'article',
+      ogImage: image
+    });
   }
 }

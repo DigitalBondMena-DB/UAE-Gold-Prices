@@ -2,6 +2,7 @@ import { Component, computed, inject, OnInit, signal } from '@angular/core';
 import { API_END_POINTS } from '../../core/constant/ApiEndPoints';
 import { AboutResponse } from '../../core/models/about.model';
 import { ApiService } from '../../core/services/api-service';
+import { SeoService } from '../../core/services/seo.service';
 import { HeroSection } from '../../shared/components/hero-section/hero-section';
 import { SectionTitle } from '../../shared/components/section-title/section-title';
 
@@ -13,6 +14,7 @@ import { SectionTitle } from '../../shared/components/section-title/section-titl
 })
 export class About implements OnInit {
   private readonly apiService = inject(ApiService);
+  private readonly seoService = inject(SeoService);
 
   // API Data Signal
   aboutData = signal<AboutResponse | null>(null);
@@ -31,6 +33,17 @@ export class About implements OnInit {
 
   ngOnInit(): void {
     this.fetchAboutData();
+    this.setSeoTags();
+  }
+
+  private setSeoTags(): void {
+    this.seoService.updateMetaTags({
+      title: 'من نحن',
+      description: 'تعرف على موقع أسعار الذهب في الإمارات - مصدرك الموثوق لمتابعة أسعار الذهب اليومية في دبي وأبوظبي والشارقة. رؤيتنا ورسالتنا في تقديم أفضل خدمة لمتابعي أسعار الذهب.',
+      keywords: 'من نحن, عن الموقع, أسعار الذهب الإمارات, موقع الذهب, about UAE gold prices',
+      canonicalUrl: `${this.seoService.getSiteUrl()}/about-us`,
+      ogType: 'website'
+    });
   }
 
   private fetchAboutData(): void {

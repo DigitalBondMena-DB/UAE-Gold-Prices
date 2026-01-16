@@ -6,6 +6,7 @@ import { Skeleton } from 'primeng/skeleton';
 import { API_END_POINTS } from '../../core/constant/ApiEndPoints';
 import { AboutHome, BannerSection, Department, HeroSlide, HomeResponse, LatestBlog } from '../../core/models/home.model';
 import { ApiService } from '../../core/services/api-service';
+import { SeoService } from '../../core/services/seo.service';
 import { HomeAbout } from './home-about/home-about';
 import { HomeBlogs } from './home-blogs/home-blogs';
 import { HomeCalculator } from './home-calculator/home-calculator';
@@ -28,6 +29,7 @@ export class Home implements OnInit, OnDestroy {
   private readonly platformId = inject(PLATFORM_ID);
   private readonly apiService = inject(ApiService);
   private readonly router = inject(Router);
+  private readonly seoService = inject(SeoService);
 
   // ViewChild to access carousel component
   carousel = viewChild<Carousel>('heroCarousel');
@@ -147,6 +149,17 @@ export class Home implements OnInit, OnDestroy {
   ngOnInit(): void {
     this.updateNumVisible();
     this.fetchHomeData();
+    this.setSeoTags();
+  }
+
+  private setSeoTags(): void {
+    this.seoService.updateMetaTags({
+      title: 'الرئيسية - أسعار الذهب اليومية',
+      description: 'تابع أسعار الذهب اليومية في الإمارات العربية المتحدة. احصل على أحدث أسعار الذهب بجميع العيارات (24، 22، 21، 18) مع حاسبة الذهب وتحويل العملات. Gold prices in UAE updated daily.',
+      keywords: 'أسعار الذهب, سعر الذهب اليوم, الذهب في الإمارات, gold price UAE, Dubai gold, أسعار الذهب دبي, عيار 24, عيار 22, عيار 21',
+      canonicalUrl: this.seoService.getSiteUrl(),
+      ogType: 'website'
+    });
   }
 
   ngOnDestroy(): void {}

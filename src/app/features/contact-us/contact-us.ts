@@ -8,6 +8,7 @@ import { API_END_POINTS } from '../../core/constant/ApiEndPoints';
 import { COUNTRIES, Country } from '../../core/data/countries';
 import { ContactBanner, ContactInfo, ContactResponse } from '../../core/models/contact.model';
 import { ApiService } from '../../core/services/api-service';
+import { SeoService } from '../../core/services/seo.service';
 import { HeroSection } from '../../shared/components/hero-section/hero-section';
 import { SectionTitle } from '../../shared/components/section-title/section-title';
 
@@ -26,9 +27,10 @@ import { SectionTitle } from '../../shared/components/section-title/section-titl
   styleUrl: './contact-us.css',
 })
 export class ContactUs implements OnInit {
-  private fb = inject(FormBuilder);
-  private apiService = inject(ApiService);
-  private router = inject(Router);
+  private readonly fb = inject(FormBuilder);
+  private readonly apiService = inject(ApiService);
+  private readonly router = inject(Router);
+  private readonly seoService = inject(SeoService);
 
   // Data signals
   bannerSection = signal<ContactBanner | null>(null);
@@ -94,6 +96,17 @@ export class ContactUs implements OnInit {
 
   ngOnInit(): void {
     this.loadContactInfo();
+    this.setSeoTags();
+  }
+
+  private setSeoTags(): void {
+    this.seoService.updateMetaTags({
+      title: 'اتصل بنا',
+      description: 'تواصل معنا للاستفسارات والاقتراحات حول أسعار الذهب في الإمارات. نحن هنا لمساعدتك والإجابة على جميع أسئلتك المتعلقة بالذهب والعملات.',
+      keywords: 'اتصل بنا, تواصل معنا, contact us, استفسارات الذهب, خدمة العملاء',
+      canonicalUrl: `${this.seoService.getSiteUrl()}/contact-us`,
+      ogType: 'website'
+    });
   }
 
   loadContactInfo(): void {

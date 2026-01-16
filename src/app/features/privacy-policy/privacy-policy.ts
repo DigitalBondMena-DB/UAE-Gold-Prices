@@ -2,6 +2,7 @@ import { Component, computed, inject, OnInit, signal } from '@angular/core';
 import { API_END_POINTS } from '../../core/constant/ApiEndPoints';
 import { PrivacyPolicyResponse } from '../../core/models/privacy-policy.model';
 import { ApiService } from '../../core/services/api-service';
+import { SeoService } from '../../core/services/seo.service';
 import { HeroSection } from '../../shared/components/hero-section/hero-section';
 import { SectionTitle } from '../../shared/components/section-title/section-title';
 
@@ -13,6 +14,7 @@ import { SectionTitle } from '../../shared/components/section-title/section-titl
 })
 export class PrivacyPolicy implements OnInit {
   private readonly apiService = inject(ApiService);
+  private readonly seoService = inject(SeoService);
 
   // API Data Signal
   privacyData = signal<PrivacyPolicyResponse | null>(null);
@@ -32,6 +34,18 @@ export class PrivacyPolicy implements OnInit {
 
   ngOnInit(): void {
     this.fetchPrivacyData();
+    this.setSeoTags();
+  }
+
+  private setSeoTags(): void {
+    this.seoService.updateMetaTags({
+      title: 'سياسة الخصوصية',
+      description: 'اقرأ سياسة الخصوصية لموقع أسعار الذهب في الإمارات. نحن نحترم خصوصيتك ونحمي بياناتك الشخصية وفقاً لأعلى معايير الأمان.',
+      keywords: 'سياسة الخصوصية, حماية البيانات, privacy policy, خصوصية المستخدم',
+      canonicalUrl: `${this.seoService.getSiteUrl()}/privacy-policy`,
+      ogType: 'website',
+      noIndex: false
+    });
   }
 
   private fetchPrivacyData(): void {

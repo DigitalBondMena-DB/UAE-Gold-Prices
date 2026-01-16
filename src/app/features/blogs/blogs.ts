@@ -5,6 +5,7 @@ import { PaginatorModule, PaginatorState } from 'primeng/paginator';
 import { API_END_POINTS } from '../../core/constant/ApiEndPoints';
 import { BlogItem, BlogsBannerSection, BlogsResponse } from '../../core/models/blogs.model';
 import { ApiService } from '../../core/services/api-service';
+import { SeoService } from '../../core/services/seo.service';
 import { HeroSection } from '../../shared/components/hero-section/hero-section';
 import { SectionTitle } from '../../shared/components/section-title/section-title';
 import { BlogSearchPipe } from '../../shared/pipes/blog-search.pipe';
@@ -16,7 +17,8 @@ import { BlogSearchPipe } from '../../shared/pipes/blog-search.pipe';
   styleUrl: './blogs.css',
 })
 export class Blogs implements OnInit {
-  private apiService = inject(ApiService);
+  private readonly apiService = inject(ApiService);
+  private readonly seoService = inject(SeoService);
 
   // Data signals
   blogs = signal<BlogItem[]>([]);
@@ -44,6 +46,17 @@ export class Blogs implements OnInit {
 
   ngOnInit(): void {
     this.loadBlogs(1);
+    this.setSeoTags();
+  }
+
+  private setSeoTags(): void {
+    this.seoService.updateMetaTags({
+      title: 'المدونة - مقالات وأخبار الذهب',
+      description: 'اقرأ أحدث المقالات والأخبار عن أسعار الذهب في الإمارات، نصائح الاستثمار في الذهب، تحليلات السوق، وتوقعات أسعار الذهب. مدونة متخصصة في عالم الذهب والمجوهرات.',
+      keywords: 'مقالات الذهب, أخبار الذهب, مدونة أسعار الذهب, تحليل سوق الذهب, استثمار الذهب, gold news UAE, gold blog',
+      canonicalUrl: `${this.seoService.getSiteUrl()}/blogs`,
+      ogType: 'website'
+    });
   }
 
   loadBlogs(page: number): void {

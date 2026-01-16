@@ -6,6 +6,7 @@ import { API_END_POINTS } from '../../core/constant/ApiEndPoints';
 import { BlogItem } from '../../core/models/blogs.model';
 import { Department as DepartmentModel, DepartmentBlogsResponse } from '../../core/models/department.model';
 import { ApiService } from '../../core/services/api-service';
+import { SeoService } from '../../core/services/seo.service';
 import { HeroSection } from '../../shared/components/hero-section/hero-section';
 import { SectionTitle } from '../../shared/components/section-title/section-title';
 
@@ -17,8 +18,9 @@ import { SectionTitle } from '../../shared/components/section-title/section-titl
   styleUrl: './department.css',
 })
 export class Department {
-  private apiService = inject(ApiService);
-  private router = inject(Router);
+  private readonly apiService = inject(ApiService);
+  private readonly router = inject(Router);
+  private readonly seoService = inject(SeoService);
 
   // Route input
   slug = input<string>('');
@@ -64,6 +66,7 @@ export class Department {
       next: (response) => {
         if (response?.department) {
           this.department.set(response.department);
+          this.setSeoTags(response.department);
         }
         if (response?.blogs) {
           this.blogs.set(response.blogs.data);
@@ -95,5 +98,21 @@ export class Department {
     
     this.first.set(0);
     this.loadDepartmentBlogs(slugValue, 1, this.searchQuery());
+  }
+
+  private setSeoTags(department: DepartmentModel): void {
+    // Use API meta values if available, otherwise generate defaults
+    const title = department.meta_title ?? department.name;
+    const description = department.meta_description
+      ?? `تصفح جميع مقالات ${department.name} على موقع أسعار الذهب في الإمارات. اقرأ أحدث الأخبار والتحليلات المتعلقة بـ ${department.name}.`;
+
+    this.seoService.updateMetaTags({
+      title: title,
+      description: description,
+      keywords: `${department.name}, مقالات ${department.name}, أخبار الذهب, تحليلات الذهب`,
+      canonicalUrl: `${this.seoService.getSiteUrl()}/department/${department.slug}`,
+      ogType: 'website',
+      ogImage: department.banner_image
+    });
   }
 }

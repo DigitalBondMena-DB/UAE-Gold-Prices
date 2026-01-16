@@ -1,34 +1,64 @@
 <!--* Hero Section -->
 <section class="hero-section relative">
-    <div class="overflow-hidden relative min-h-[90vh] h-full flex flex-col justify-center">
-        <!-- Default Background Image for LCP Optimization -->
-        <img [src]="defaultHeroImage()" alt="hero" 
-            class="hero-bg-image absolute inset-0 w-full h-full object-center object-cover transition-all! duration-500!"
-            [class.opacity-0]="selectedImage()"
-            width="1920" height="1080" fetchpriority="high" loading="eager" />
+    <div class="overflow-hidden relative min-h-[100vh] h-full flex flex-col justify-center">
+        <!-- Background Images with Crossfade -->
+        <div class="hero-bg-container absolute inset-0">
+            <!-- Default Background -->
+            <img [src]="defaultHeroImage()" alt="hero background" 
+                class="hero-bg absolute inset-0 w-full h-full object-center object-cover"
+                [class.hidden-bg]="selectedImage()"
+                width="1920" height="1080" fetchpriority="high" loading="eager" />
+            
+            <!-- Previous Background (fading out) -->
+            @if (previousImage()) {
+                <img [src]="previousImage()" alt="previous background" 
+                    class="hero-bg-previous absolute inset-0 w-full h-full object-center object-cover"
+                    (click)="navigateToBlog()" />
+            }
+            
+            <!-- Selected Background (from carousel click) - Fading in -->
+            @if (selectedImage()) {
+                <img [src]="selectedImage()" alt="selected background" 
+                    class="hero-bg-selected absolute inset-0 w-full h-full object-center object-cover cursor-pointer"
+                    [class.hero-bg-ready]="isNewImageReady()"
+                    (click)="navigateToBlog()" />
+            }
+        </div>
         
-        <!-- Selected Background Image (appears on carousel click) -->
-        @if (selectedImage()) {
-            <img [src]="selectedImage()" alt="hero selected" 
-                class="hero-bg-hover absolute inset-0 w-full h-full object-center object-cover animate-fade-in transition-all! duration-500!" />
-        }
-        
-        <!-- Dark Overlay -->
-        <div class="absolute inset-0 bg-linear-to-t from-black/80 via-black/40 to-transparent z-1"></div>
+        <!-- Dark Overlay - Clickable when item is selected -->
+        <div class="absolute inset-0 bg-linear-to-t from-black/80 via-black/40 to-transparent z-1"
+            [class.cursor-pointer]="selectedImage()"
+            (click)="selectedImage() && navigateToBlog()"></div>
 
         <div class="container h-full mx-auto px-5 lg:px-20 relative z-10 flex flex-col justify-center pt-20">
             <!-- Hero Text Content -->
-            <div class="text-right mb-8 lg:mb-12">
-                <h1 class="text-3xl md:text-4xl lg:text-6xl font-bold text-white mb-4 leading-tight">
-                    {{ bannerSection()?.title ?? 'تحديثات لحظية لأسعار الذهب' }}
-                </h1>
-                <p class="text-white/90 text-base md:text-xl lg:text-3xl max-w-2xl">
-                    {{ bannerSection()?.text ?? 'احصل على أحدث أسعار الذهب والفضة والمعادن الثمينة مع تحديثات فورية.' }}
-                </p>
+            <div class="text-right mb-8 lg:mb-12" 
+                [class.cursor-pointer]="selectedImage()"
+                (click)="selectedImage() && navigateToBlog()">
+                
+                <!-- Default Banner Content -->
+                @if (!selectedImage()) {
+                    <h1 class="text-3xl md:text-4xl lg:text-6xl font-bold text-white mb-4 leading-tight">
+                        {{ bannerSection()?.title ?? 'تحديثات لحظية لأسعار الذهب' }}
+                    </h1>
+                    <p class="text-white/90 text-base md:text-xl lg:text-3xl max-w-2xl">
+                        {{ bannerSection()?.text ?? 'احصل على أحدث أسعار الذهب والفضة والمعادن الثمينة مع تحديثات فورية.' }}
+                    </p>
+                }
+                
+                <!-- Selected Carousel Item Content -->
+                @if (selectedImage()) {
+                    <h1 #heroTitle class="hero-title-animate text-3xl md:text-4xl lg:text-6xl font-bold text-gold mb-4 leading-tight">
+                        {{ selectedTitle() }}
+                    </h1>
+                    <p #heroSubtitle class="hero-subtitle-animate text-white/90 text-base md:text-xl lg:text-3xl max-w-2xl">
+                        {{ selectedSmallText() }}
+                    </p>
+                }
             </div>
 
             <!-- Carousel Section -->
-            <div class="hero-carousel mt-auto pb-10 "
+            <div class="hero-carousel mt-auto py-10 "
                 (mouseenter)="pauseCarousel()"
                 (mouseleave)="resumeCarousel()">
                 <p-carousel #heroCarousel 
@@ -39,12 +69,12 @@
                     [showIndicators]="false"
                     [showNavigators]="false" 
                     [circular]="true" 
-                    [autoplayInterval]="5000"
+                    [autoplayInterval]="3000"
                     (onPage)="onPageChange($event)">
                     <ng-template #item let-item let-i="index">
                         <div class="px-2 py-2">
                             <div class="carousel-card group relative overflow-hidden rounded-xl cursor-pointer transition-all duration-300 h-48 md:h-56 lg:h-64"
-                                (click)="selectImage(item.image)">
+                                (click)="selectImage(item)">
                                 <!-- Card Image -->
                                 <img [src]="item.image" [alt]="item.title"
                                     class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110" />

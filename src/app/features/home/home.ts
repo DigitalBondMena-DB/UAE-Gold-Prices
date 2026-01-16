@@ -1,5 +1,6 @@
 import { CommonModule, isPlatformBrowser } from '@angular/common';
-import { Component, computed, HostListener, inject, OnDestroy, OnInit, PLATFORM_ID, signal, viewChild } from '@angular/core';
+import { Component, computed, effect, ElementRef, HostListener, inject, OnDestroy, OnInit, PLATFORM_ID, signal, viewChild } from '@angular/core';
+import { Router } from '@angular/router';
 import { Carousel, CarouselPageEvent } from 'primeng/carousel';
 import { API_END_POINTS } from '../../core/constant/ApiEndPoints';
 import { AboutHome, BannerSection, Department, HeroSlide, HomeResponse, LatestBlog } from '../../core/models/home.model';
@@ -11,7 +12,9 @@ import { HomeCategories } from './home-categories/home-categories';
 
 interface CarouselItem {
   title: string;
+  smallText: string;
   image: string;
+  slug: string;
 }
 
 @Component({
@@ -23,15 +26,60 @@ interface CarouselItem {
 export class Home implements OnInit, OnDestroy {
   private readonly platformId = inject(PLATFORM_ID);
   private readonly apiService = inject(ApiService);
+  private readonly router = inject(Router);
 
   // ViewChild to access carousel component
   carousel = viewChild<Carousel>('heroCarousel');
+  
+  // ViewChild for hero text elements
+  heroTitle = viewChild<ElementRef<HTMLHeadingElement>>('heroTitle');
+  heroSubtitle = viewChild<ElementRef<HTMLParagraphElement>>('heroSubtitle');
+  
+  // Effect to restart text animations when selection changes
+  private textAnimationEffect = effect(() => {
+    const key = this.selectionKey();
+    if (key > 0 && isPlatformBrowser(this.platformId)) {
+      // Wait for next tick to ensure elements are rendered
+      setTimeout(() => {
+        const titleEl = this.heroTitle()?.nativeElement;
+        const subtitleEl = this.heroSubtitle()?.nativeElement;
+        
+        if (titleEl) {
+          titleEl.style.animation = 'none';
+          titleEl.offsetHeight; // Trigger reflow
+          titleEl.style.animation = '';
+        }
+        
+        if (subtitleEl) {
+          subtitleEl.style.animation = 'none';
+          subtitleEl.offsetHeight; // Trigger reflow
+          subtitleEl.style.animation = '';
+        }
+      }, 10);
+    }
+  });
 
   // API Data Signals
   homeData = signal<HomeResponse | null>(null);
 
   // Signal to track selected (clicked) carousel image for background
   selectedImage = signal<string | null>(null);
+  
+  // Signal for the previous image (used for crossfade)
+  previousImage = signal<string | null>(null);
+  
+  // Signal to track selected blog slug for navigation
+  selectedSlug = signal<string | null>(null);
+  
+  // Signals to track selected title and small text for hero display
+  selectedTitle = signal<string | null>(null);
+  selectedSmallText = signal<string | null>(null);
+  
+  // Unique key that changes on each selection to force re-render and restart animations
+  selectionKey = signal(0);
+  
+  // Flag to control when new image is ready to show
+  isNewImageReady = signal(false);
 
   // Signals for tracking visible carousel items
   currentPage = signal(0);
@@ -48,7 +96,9 @@ export class Home implements OnInit, OnDestroy {
     const slides = this.heroSlides();
     const items: CarouselItem[] = slides.map(slide => ({
       title: slide.title,
-      image: slide.main_image
+      smallText: slide.small_text,
+      image: slide.main_image,
+      slug: slide.slug
     }));
     
     // If we have fewer items than needed for smooth scrolling, duplicate them
@@ -161,8 +211,52 @@ export class Home implements OnInit, OnDestroy {
   }
 
   // Select image on click
-  selectImage(image: string): void {
-    this.selectedImage.set(image);
+  selectImage(item: CarouselItem): void {
+    if (this.selectedImage() === item.image) return;
+    
+    // Store current image as previous for crossfade
+    const currentImage = this.selectedImage();
+    if (currentImage) {
+      this.previousImage.set(currentImage);
+    }
+    
+    // Reset ready state
+    this.isNewImageReady.set(false);
+    
+    // Preload new image before showing
+    if (isPlatformBrowser(this.platformId)) {
+      const img = new Image();
+      img.onload = () => {
+        // Image loaded, now show it
+        this.selectedImage.set(item.image);
+        this.selectedSlug.set(item.slug);
+        this.selectedTitle.set(item.title);
+        this.selectedSmallText.set(item.smallText);
+        this.selectionKey.update(k => k + 1);
+        this.isNewImageReady.set(true);
+        
+        // Clear previous image after animation completes
+        setTimeout(() => {
+          this.previousImage.set(null);
+        }, 800);
+      };
+      img.src = item.image;
+    } else {
+      // SSR fallback
+      this.selectedImage.set(item.image);
+      this.selectedSlug.set(item.slug);
+      this.selectedTitle.set(item.title);
+      this.selectedSmallText.set(item.smallText);
+      this.selectionKey.update(k => k + 1);
+    }
+  }
+
+  // Navigate to blog detail page
+  navigateToBlog(): void {
+    const slug = this.selectedSlug();
+    if (slug) {
+      this.router.navigate(['/blog', slug]);
+    }
   }
 
   // Pause carousel on hover

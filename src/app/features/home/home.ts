@@ -39,27 +39,29 @@ export class Home implements OnInit, OnDestroy {
   heroTitle = viewChild<ElementRef<HTMLHeadingElement>>('heroTitle');
   heroSubtitle = viewChild<ElementRef<HTMLParagraphElement>>('heroSubtitle');
   
-  // Effect to restart text animations when selection changes
+  // Effect to restart text animations when selection changes (without forced reflow)
   private textAnimationEffect = effect(() => {
     const key = this.selectionKey();
     if (key > 0 && isPlatformBrowser(this.platformId)) {
-      // Wait for next tick to ensure elements are rendered
-      setTimeout(() => {
+      // Use requestAnimationFrame instead of triggering forced reflow
+      requestAnimationFrame(() => {
         const titleEl = this.heroTitle()?.nativeElement;
         const subtitleEl = this.heroSubtitle()?.nativeElement;
         
         if (titleEl) {
-          titleEl.style.animation = 'none';
-          titleEl.offsetHeight; // Trigger reflow
-          titleEl.style.animation = '';
+          titleEl.classList.remove('hero-title-animate');
+          requestAnimationFrame(() => {
+            titleEl.classList.add('hero-title-animate');
+          });
         }
         
         if (subtitleEl) {
-          subtitleEl.style.animation = 'none';
-          subtitleEl.offsetHeight; // Trigger reflow
-          subtitleEl.style.animation = '';
+          subtitleEl.classList.remove('hero-subtitle-animate');
+          requestAnimationFrame(() => {
+            subtitleEl.classList.add('hero-subtitle-animate');
+          });
         }
-      }, 10);
+      });
     }
   });
 
@@ -199,12 +201,12 @@ export class Home implements OnInit, OnDestroy {
             this.injectHeroImagePreload(response.bannerSection.main_image);
           }
           
-          // Preload carousel images before showing
+          // Preload carousel images before showing (both client and SSR)
           if (isPlatformBrowser(this.platformId)) {
             this.preloadCarouselImages(response.heroSection ?? []);
           } else {
-            // On server, set loading false since data is available from TransferState
-            this.isLoading.set(false);
+            // On server, keep loading true - client will handle preloading
+            this.isLoading.set(true);
           }
         }
       },
@@ -227,6 +229,7 @@ export class Home implements OnInit, OnDestroy {
   // Preload carousel images to prevent layout shift
   private preloadCarouselImages(slides: HeroSlide[]): void {
     if (slides.length === 0) {
+      this.imagesLoaded.set(true);
       this.isLoading.set(false);
       return;
     }

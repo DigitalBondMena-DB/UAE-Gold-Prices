@@ -1,5 +1,15 @@
 <!--* Hero Section -->
 <section class="hero-section relative">
+    <!-- Hidden LCP preload image - Always in DOM for discovery -->
+    @if (carouselItems().length > 0) {
+        <img [src]="carouselItems()[0].image" 
+             [alt]="carouselItems()[0].title"
+             width="400" height="256"
+             fetchpriority="high"
+             loading="eager"
+             class="lcp-preload-img"
+             aria-hidden="true" />
+    }
     <div class="overflow-hidden relative min-h-[80vh] md:min-h-screen h-full flex flex-col justify-center">
         <!-- Background Images with Crossfade -->
         <div class="hero-bg-container absolute inset-0">

@@ -50,7 +50,7 @@ export class CurrencyCalculator implements OnInit {
   // Form values
   fromCurrency: Currency | null = null;
   toCurrency: Currency | null = null;
-  amount: number | null = 0;
+  amount: number | null = 10;
 
   // Result signals
   convertedAmount = signal<number | null>(null);

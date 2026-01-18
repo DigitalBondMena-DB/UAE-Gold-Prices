@@ -154,7 +154,27 @@
     </div>
 </section>
 <!--* Home Sections -->
-<app-home-about [aboutData]="aboutHome()"></app-home-about>
-<app-home-categories [departments]="departments()"></app-home-categories>
-<app-home-calculator></app-home-calculator>
-<app-home-blogs [blogs]="latestBlogs()"></app-home-blogs>
+<!-- Deferred loading - reduces initial JS bundle -->
+@defer (on viewport) {
+    <app-home-about [aboutData]="aboutHome()"></app-home-about>
+  } @placeholder {
+    <div class="h-64 bg-gray-100 animate-pulse rounded-xl"></div>
+  }
+  
+  @defer (on viewport) {
+    <app-home-categories [departments]="departments()"></app-home-categories>
+  } @placeholder {
+    <div class="h-48 bg-gray-100 animate-pulse rounded-xl"></div>
+  }
+  
+  @defer (on viewport) {
+    <app-home-calculator></app-home-calculator>
+  } @placeholder {
+    <div class="h-96 bg-gray-100 animate-pulse rounded-xl"></div>
+  }
+  
+  @defer (on viewport) {
+    <app-home-blogs [blogs]="latestBlogs()"></app-home-blogs>
+  } @placeholder {
+    <div class="h-64 bg-gray-100 animate-pulse rounded-xl"></div>
+  }

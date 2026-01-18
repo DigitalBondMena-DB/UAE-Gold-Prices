@@ -15,8 +15,8 @@
 /* Main wrapper with perspective */
 .orbit-wrapper {
   position: relative;
-  width: 520px;
-  height: 420px;
+  width: 620px;
+  height: 520px;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -26,8 +26,8 @@
 /* Ring container - handles 3D rotation */
 .orbit-ring-container {
   position: absolute;
-  width: 450px;
-  height: 450px;
+  width: 650px;
+  height: 650px;
   transform-style: preserve-3d;
   animation: orbitRotate 8s linear infinite;
 }
@@ -37,9 +37,9 @@
   position: absolute;
   inset: 0;
   border-radius: 50%;
-  border: 8px solid #D4AF37;
+  border: 10px solid #D4AF37;
   background: transparent;
-  transform: rotateX(75deg);
+  transform: rotateX(0deg);
   box-shadow: 
     0 0 20px rgba(212, 175, 55, 0.5),
     0 0 40px rgba(212, 175, 55, 0.3),
@@ -52,7 +52,7 @@
   position: absolute;
   inset: -8px;
   border-radius: 50%;
-  border: 8px solid transparent;
+  border: 10px solid transparent;
   border-top-color: #E8C547;
   border-right-color: #C9A227;
   border-bottom-color: #B8941A;

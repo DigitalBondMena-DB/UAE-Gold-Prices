@@ -4,7 +4,7 @@ import {
   provideBrowserGlobalErrorListeners,
   provideZonelessChangeDetection,
 } from '@angular/core';
-import { provideClientHydration, withEventReplay } from '@angular/platform-browser';
+import { provideClientHydration, withEventReplay, withHttpTransferCacheOptions } from '@angular/platform-browser';
 import { provideAnimationsAsync } from '@angular/platform-browser/animations/async';
 import { provideRouter, withComponentInputBinding, withInMemoryScrolling, withViewTransitions } from '@angular/router';
 import Aura from '@primeuix/themes/aura';
@@ -23,7 +23,13 @@ export const appConfig: ApplicationConfig = {
       }),
       withViewTransitions()
     ),
-    provideClientHydration(withEventReplay()),
+    provideClientHydration(
+      withEventReplay(),
+      withHttpTransferCacheOptions({
+        includePostRequests: false,
+        includeRequestsWithAuthHeaders: false,
+      })
+    ),
     provideAnimationsAsync(),
     providePrimeNG({
       theme: {

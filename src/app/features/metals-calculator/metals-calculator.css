@@ -214,6 +214,9 @@
   width: 100%;
 }
 
+:host ::ng-deep .p-select{
+  border: none!important;
+}
 :host ::ng-deep .metal-dropdown .p-select,
 :host ::ng-deep .currency-dropdown .p-select,
 :host ::ng-deep .karat-dropdown .p-select {
@@ -229,7 +232,7 @@
 :host ::ng-deep .metal-dropdown .p-select:hover,
 :host ::ng-deep .currency-dropdown .p-select:hover,
 :host ::ng-deep .karat-dropdown .p-select:hover {
-  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.15);
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.15)
 }
 
 :host ::ng-deep .metal-dropdown .p-select:focus,
@@ -242,7 +245,7 @@
 }
 
 :host ::ng-deep .p-select-label {
-  padding: 0.75rem 1rem;
+  padding: 0 !important;
 }
 
 :host ::ng-deep .p-select-dropdown {
@@ -351,3 +354,5 @@
     font-size: 1.125rem;
   }
 }
+
+

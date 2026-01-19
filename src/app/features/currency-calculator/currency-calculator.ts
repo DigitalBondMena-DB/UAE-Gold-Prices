@@ -50,12 +50,22 @@ export class CurrencyCalculator implements OnInit {
   // Form values
   fromCurrency: Currency | null = null;
   toCurrency: Currency | null = null;
-  amount: number | null = 10;
+  amount: number | null = null;
 
   // Result signals
   convertedAmount = signal<number | null>(null);
   exchangeRate = signal<number | null>(null);
   showResult = signal<boolean>(false);
+
+  // Rate limiting (6 hours cooldown)
+  private readonly COOLDOWN_HOURS = 6;
+  remainingTime = signal<{ hours: number; minutes: number } | null>(null);
+
+  // Validation signals
+  isSubmitted = signal<boolean>(false);
+  amountTouched = signal<boolean>(false);
+  fromCurrencyTouched = signal<boolean>(false);
+  toCurrencyTouched = signal<boolean>(false);
 
   // Currency code to flag mapping (ISO 3166-1 alpha-2)
   private currencyFlagMap: Record<string, string> = {
@@ -163,17 +173,100 @@ export class CurrencyCalculator implements OnInit {
     this.toCurrency = temp;
   }
 
+  // Validation methods
+  isAmountInvalid(): boolean {
+    return (this.isSubmitted() || this.amountTouched()) && (!this.amount || this.amount <= 0);
+  }
+
+  isFromCurrencyInvalid(): boolean {
+    return (this.isSubmitted() || this.fromCurrencyTouched()) && !this.fromCurrency;
+  }
+
+  isToCurrencyInvalid(): boolean {
+    return (this.isSubmitted() || this.toCurrencyTouched()) && !this.toCurrency;
+  }
+
+  isFormValid(): boolean {
+    return !!this.amount && this.amount > 0 && !!this.fromCurrency && !!this.toCurrency;
+  }
+
+  onAmountBlur(): void {
+    this.amountTouched.set(true);
+  }
+
+  onFromCurrencyChange(): void {
+    this.fromCurrencyTouched.set(true);
+  }
+
+  onToCurrencyChange(): void {
+    this.toCurrencyTouched.set(true);
+  }
+
+  // Rate limiting methods
+  canCalculate(): boolean {
+    if (isPlatformBrowser(this.platformId)) {
+      const savedData = localStorage.getItem(CURRENCY_CALC_STORAGE_KEY);
+      if (!savedData) return true;
+      
+      try {
+        const parsed = JSON.parse(savedData);
+        if (parsed.timestamp) {
+          const hoursDiff = (Date.now() - parsed.timestamp) / (1000 * 60 * 60);
+          return hoursDiff >= this.COOLDOWN_HOURS;
+        }
+      } catch {
+        return true;
+      }
+    }
+    return true;
+  }
+
+  updateRemainingTime(): void {
+    if (isPlatformBrowser(this.platformId)) {
+      const savedData = localStorage.getItem(CURRENCY_CALC_STORAGE_KEY);
+      if (!savedData) {
+        this.remainingTime.set(null);
+        return;
+      }
+      
+      try {
+        const parsed = JSON.parse(savedData);
+        if (parsed.timestamp) {
+          const hoursDiff = (Date.now() - parsed.timestamp) / (1000 * 60 * 60);
+          
+          if (hoursDiff < this.COOLDOWN_HOURS) {
+            const remaining = this.COOLDOWN_HOURS - hoursDiff;
+            this.remainingTime.set({
+              hours: Math.floor(remaining),
+              minutes: Math.floor((remaining % 1) * 60)
+            });
+          } else {
+            this.remainingTime.set(null);
+          }
+        }
+      } catch {
+        this.remainingTime.set(null);
+      }
+    }
+  }
+
   convertCurrency(): void {
-    if (!this.fromCurrency || !this.toCurrency || !this.amount) {
+    this.isSubmitted.set(true);
+
+    if (!this.isFormValid()) {
+      return;
+    }
+
+    if (!this.canCalculate()) {
       return;
     }
 
     this.isConverting.set(true);
 
     const queryParams = new URLSearchParams({
-      from: this.fromCurrency.code,
-      to: this.toCurrency.code,
-      amount: this.amount.toString(),
+      from: this.fromCurrency!.code,
+      to: this.toCurrency!.code,
+      amount: this.amount!.toString(),
     });
 
     const endpoint = `${API_END_POINTS.CURRENCY_CONVERTER}?${queryParams.toString()}`;
@@ -197,10 +290,20 @@ export class CurrencyCalculator implements OnInit {
   }
 
   resetCalculator(): void {
+    // Only allow reset if cooldown has expired
+    if (!this.canCalculate()) {
+      return;
+    }
     this.convertedAmount.set(null);
     this.exchangeRate.set(null);
     this.showResult.set(false);
+    this.remainingTime.set(null);
     this.clearStoredResult();
+    // Reset validation state
+    this.isSubmitted.set(false);
+    this.amountTouched.set(false);
+    this.fromCurrencyTouched.set(false);
+    this.toCurrencyTouched.set(false);
   }
 
   private loadSavedResult(): void {
@@ -211,30 +314,26 @@ export class CurrencyCalculator implements OnInit {
           const parsed = JSON.parse(savedData);
           console.log('Loaded saved currency result from localStorage:', parsed);
           if (parsed.result && parsed.timestamp) {
-            // Check if result is less than 24 hours old
-            const hoursDiff = (Date.now() - parsed.timestamp) / (1000 * 60 * 60);
-            if (hoursDiff < 24) {
-              this.convertedAmount.set(parsed.result);
-              this.exchangeRate.set(parsed.rate);
-              this.showResult.set(true);
-              this.amount = parsed.amount;
-              // Restore currency selection
-              if (parsed.fromCode && parsed.toCode) {
-                this.fromCurrency = { 
-                  code: parsed.fromCode, 
-                  name: parsed.fromName ?? '', 
-                  flag: this.currencyFlagMap[parsed.fromCode] ?? '' 
-                };
-                this.toCurrency = { 
-                  code: parsed.toCode, 
-                  name: parsed.toName ?? '', 
-                  flag: this.currencyFlagMap[parsed.toCode] ?? '' 
-                };
-              }
-            } else {
-              console.log('Saved result expired, clearing...');
-              this.clearStoredResult();
+            // Always show saved result (don't clear on expiration)
+            this.convertedAmount.set(parsed.result);
+            this.exchangeRate.set(parsed.rate);
+            this.showResult.set(true);
+            this.amount = parsed.amount;
+            // Restore currency selection
+            if (parsed.fromCode && parsed.toCode) {
+              this.fromCurrency = { 
+                code: parsed.fromCode, 
+                name: parsed.fromName ?? '', 
+                flag: this.currencyFlagMap[parsed.fromCode] ?? '' 
+              };
+              this.toCurrency = { 
+                code: parsed.toCode, 
+                name: parsed.toName ?? '', 
+                flag: this.currencyFlagMap[parsed.toCode] ?? '' 
+              };
             }
+            // Update remaining time for cooldown
+            this.updateRemainingTime();
           }
         } catch {
           this.clearStoredResult();

@@ -31,13 +31,10 @@ interface GoldApiResponse {
 
 interface PriceCalculatorResponse {
   success: boolean;
-  data: {
-    price: number;
-    currency: string;
-    metal: string;
-    karat: number;
-    weight: number;
-  };
+  metal: string;
+  currency: string;
+  price_per_gram: number;
+  total_price: number;
 }
 
 @Component({
@@ -65,8 +62,19 @@ export class GoldCalculator implements OnInit {
   
   // Result signals
   result = signal<number | null>(null);
+  pricePerGram = signal<number | null>(null);
   showResult = signal<boolean>(false);
   isCalculating = signal(false);
+
+  // Rate limiting (12 hours cooldown)
+  private readonly COOLDOWN_HOURS = 12;
+  remainingTime = signal<{ hours: number; minutes: number } | null>(null);
+
+  // Validation signals
+  isSubmitted = signal<boolean>(false);
+  currencyTouched = signal<boolean>(false);
+  weightTouched = signal<boolean>(false);
+  karatTouched = signal<boolean>(false);
 
   // Currency code to flag mapping (ISO 3166-1 alpha-2)
   private currencyFlagMap: Record<string, string> = {
@@ -173,8 +181,91 @@ export class GoldCalculator implements OnInit {
     });
   }
 
+  // Validation methods
+  isCurrencyInvalid(): boolean {
+    return (this.isSubmitted() || this.currencyTouched()) && !this.selectedCurrency;
+  }
+
+  isWeightInvalid(): boolean {
+    return (this.isSubmitted() || this.weightTouched()) && (!this.weight || this.weight <= 0);
+  }
+
+  isKaratInvalid(): boolean {
+    return (this.isSubmitted() || this.karatTouched()) && !this.selectedKarat;
+  }
+
+  isFormValid(): boolean {
+    return !!this.selectedCurrency && !!this.weight && this.weight > 0 && !!this.selectedKarat;
+  }
+
+  onCurrencyChange(): void {
+    this.currencyTouched.set(true);
+  }
+
+  onWeightBlur(): void {
+    this.weightTouched.set(true);
+  }
+
+  onKaratChange(): void {
+    this.karatTouched.set(true);
+  }
+
+  // Rate limiting methods
+  canCalculate(): boolean {
+    if (isPlatformBrowser(this.platformId)) {
+      const savedData = localStorage.getItem(GOLD_CALC_STORAGE_KEY);
+      if (!savedData) return true;
+      
+      try {
+        const parsed = JSON.parse(savedData);
+        if (parsed.timestamp) {
+          const hoursDiff = (Date.now() - parsed.timestamp) / (1000 * 60 * 60);
+          return hoursDiff >= this.COOLDOWN_HOURS;
+        }
+      } catch {
+        return true;
+      }
+    }
+    return true;
+  }
+
+  updateRemainingTime(): void {
+    if (isPlatformBrowser(this.platformId)) {
+      const savedData = localStorage.getItem(GOLD_CALC_STORAGE_KEY);
+      if (!savedData) {
+        this.remainingTime.set(null);
+        return;
+      }
+      
+      try {
+        const parsed = JSON.parse(savedData);
+        if (parsed.timestamp) {
+          const hoursDiff = (Date.now() - parsed.timestamp) / (1000 * 60 * 60);
+          
+          if (hoursDiff < this.COOLDOWN_HOURS) {
+            const remaining = this.COOLDOWN_HOURS - hoursDiff;
+            this.remainingTime.set({
+              hours: Math.floor(remaining),
+              minutes: Math.floor((remaining % 1) * 60)
+            });
+          } else {
+            this.remainingTime.set(null);
+          }
+        }
+      } catch {
+        this.remainingTime.set(null);
+      }
+    }
+  }
+
   calculatePrice(): void {
-    if (!this.selectedKarat || !this.selectedCurrency || !this.weight) {
+    this.isSubmitted.set(true);
+
+    if (!this.isFormValid()) {
+      return;
+    }
+
+    if (!this.canCalculate()) {
       return;
     }
 
@@ -183,20 +274,21 @@ export class GoldCalculator implements OnInit {
 
     const queryParams = new URLSearchParams({
       metal: 'gold',
-      karat: this.selectedKarat.value.toString(),
-      currency: this.selectedCurrency.code,
-      weight: this.weight.toString(),
+      karat: this.selectedKarat!.value.toString(),
+      currency: this.selectedCurrency!.code,
+      weight: this.weight!.toString(),
     });
 
     const endpoint = `${API_END_POINTS.GOLD_PRICE_CALCULATOR}?${queryParams.toString()}`;
 
     this.apiService.get<PriceCalculatorResponse>(endpoint).subscribe({
       next: (response) => {
-        if (response?.success && response.data) {
-          this.result.set(response.data.price);
+        if (response?.success && response.total_price) {
+          this.result.set(response.total_price);
+          this.pricePerGram.set(response.price_per_gram);
           this.showResult.set(true);
-          console.log(response.data);
-          this.saveResultToStorage(response.data.price);
+          console.log(response);
+          this.saveResultToStorage(response.total_price, response.price_per_gram);
         }
         this.isCalculating.set(false);
       },
@@ -207,9 +299,20 @@ export class GoldCalculator implements OnInit {
   }
 
   resetCalculator(): void {
+    // Only allow reset if cooldown has expired
+    if (!this.canCalculate()) {
+      return;
+    }
     this.result.set(null);
+    this.pricePerGram.set(null);
     this.showResult.set(false);
+    this.remainingTime.set(null);
     this.clearStoredResult();
+    // Reset validation state
+    this.isSubmitted.set(false);
+    this.currencyTouched.set(false);
+    this.weightTouched.set(false);
+    this.karatTouched.set(false);
   }
 
   private loadSavedResult(): void {
@@ -219,16 +322,27 @@ export class GoldCalculator implements OnInit {
         try {
           const parsed = JSON.parse(savedData);
           if (parsed.price && parsed.currencyCode && parsed.timestamp) {
-            // Check if result is less than 24 hours old
-            const hoursDiff = (Date.now() - parsed.timestamp) / (1000 * 60 * 60);
-            if (hoursDiff < 24) {
-              this.result.set(parsed.price);
-              this.showResult.set(true);
-              // Restore currency selection after currencies are loaded
-              this.selectedCurrency = { code: parsed.currencyCode, name: parsed.currencyName ?? '', flag: this.currencyFlagMap[parsed.currencyCode] ?? '' };
-            } else {
-              this.clearStoredResult();
+            // Always show saved result (don't clear on expiration)
+            this.result.set(parsed.price);
+            this.pricePerGram.set(parsed.pricePerGram ?? null);
+            this.showResult.set(true);
+            // Restore currency selection
+            this.selectedCurrency = { 
+              code: parsed.currencyCode, 
+              name: parsed.currencyName ?? '', 
+              flag: this.currencyFlagMap[parsed.currencyCode] ?? '' 
+            };
+            // Restore weight
+            this.weight = parsed.weight ?? null;
+            // Restore karat selection
+            if (parsed.karatValue) {
+              this.selectedKarat = { 
+                name: `${parsed.karatValue} `, 
+                value: parsed.karatValue 
+              };
             }
+            // Update remaining time for cooldown
+            this.updateRemainingTime();
           }
         } catch {
           this.clearStoredResult();
@@ -237,12 +351,15 @@ export class GoldCalculator implements OnInit {
     }
   }
 
-  private saveResultToStorage(price: number): void {
-    if (isPlatformBrowser(this.platformId) && this.selectedCurrency) {
+  private saveResultToStorage(price: number, pricePerGram: number): void {
+    if (isPlatformBrowser(this.platformId) && this.selectedCurrency && this.selectedKarat) {
       const dataToSave = {
         price,
+        pricePerGram,
         currencyCode: this.selectedCurrency.code,
         currencyName: this.selectedCurrency.name,
+        weight: this.weight,
+        karatValue: this.selectedKarat.value,
         timestamp: Date.now(),
       };
       localStorage.setItem(GOLD_CALC_STORAGE_KEY, JSON.stringify(dataToSave));

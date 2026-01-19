@@ -11,7 +11,7 @@ export const API_END_POINTS = {
   SUBMIT_CONTACT_FORM: 'contact/submit',
   //!Calculators
   //!Calculate Gold and metals Price in any country and purity 
-  GOLD_PRICE_CALCULATOR: 'metals/prices',
+  GOLD_PRICE_CALCULATOR: 'metals/calculate',
   //!Currency Calculator
   CURRENCY_CONVERTER: 'currency/convert',
   CURRENCY_COUNTRY_LIST: 'currency/list',

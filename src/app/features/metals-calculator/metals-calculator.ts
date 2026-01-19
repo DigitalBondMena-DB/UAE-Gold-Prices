@@ -1,10 +1,13 @@
-import { Component, inject, OnInit, signal } from '@angular/core';
+import { isPlatformBrowser } from '@angular/common';
+import { Component, inject, OnInit, PLATFORM_ID, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { Select } from 'primeng/select';
 import { API_END_POINTS } from '../../core/constant/ApiEndPoints';
 import { ApiService } from '../../core/services/api-service';
 import { HeroSection } from '../../shared/components/hero-section/hero-section';
 import { SectionTitle } from '../../shared/components/section-title/section-title';
+
+const METALS_CALC_STORAGE_KEY = 'metals_calculator_result';
 
 interface Metal {
   code: string;
@@ -35,7 +38,15 @@ interface GoldApiResponse {
 
 interface CurrencyApiResponse {
   success: boolean;
-  currencies: Record<string, string>; // { "USD": "الدولار الأمريكي", ... }
+  currencies: Record<string, string>;
+}
+
+interface PriceCalculatorResponse {
+  success: boolean;
+  metal: string;
+  currency: string;
+  price_per_gram: number;
+  total_price: number;
 }
 
 @Component({
@@ -46,18 +57,18 @@ interface CurrencyApiResponse {
 })
 export class MetalsCalculator implements OnInit {
   private readonly apiService = inject(ApiService);
+  private readonly platformId = inject(PLATFORM_ID);
 
   // Loading states
   isLoadingMetals = signal(true);
   isLoadingGold = signal(true);
   isLoadingCurrencies = signal(true);
+  isCalculating = signal(false);
 
   // API Data Signals
   metals = signal<Metal[]>([]);
   karats = signal<Karat[]>([]);
   currencies = signal<Currency[]>([]);
-
-
 
   // Form values - using objects for PrimeNG Select
   selectedMetal: Metal | null = null;
@@ -67,7 +78,19 @@ export class MetalsCalculator implements OnInit {
 
   // Result signals
   result = signal<number | null>(null);
+  pricePerGram = signal<number | null>(null);
   showResult = signal<boolean>(false);
+
+  // Rate limiting (12 hours cooldown)
+  private readonly COOLDOWN_HOURS = 12;
+  remainingTime = signal<{ hours: number; minutes: number } | null>(null);
+
+  // Validation signals
+  isSubmitted = signal<boolean>(false);
+  metalTouched = signal<boolean>(false);
+  karatTouched = signal<boolean>(false);
+  weightTouched = signal<boolean>(false);
+  currencyTouched = signal<boolean>(false);
 
   // Metal name mapping for Arabic display
   private metalNamesAr: Record<string, string> = {
@@ -135,6 +158,7 @@ export class MetalsCalculator implements OnInit {
     this.fetchMetalsList();
     this.fetchGoldList();
     this.fetchCurrencyList();
+    this.loadSavedResult();
   }
 
   private fetchMetalsList(): void {
@@ -201,31 +225,212 @@ export class MetalsCalculator implements OnInit {
     });
   }
 
+  // Validation methods
+  isMetalInvalid(): boolean {
+    return (this.isSubmitted() || this.metalTouched()) && !this.selectedMetal;
+  }
+
+  isKaratInvalid(): boolean {
+    return (this.isSubmitted() || this.karatTouched()) && !this.selectedKarat;
+  }
+
+  isWeightInvalid(): boolean {
+    return (this.isSubmitted() || this.weightTouched()) && (!this.weight || this.weight <= 0);
+  }
+
+  isCurrencyInvalid(): boolean {
+    return (this.isSubmitted() || this.currencyTouched()) && !this.selectedCurrency;
+  }
+
+  isFormValid(): boolean {
+    return !!this.selectedMetal && !!this.selectedKarat && !!this.weight && this.weight > 0 && !!this.selectedCurrency;
+  }
+
+  onMetalChange(): void {
+    this.metalTouched.set(true);
+  }
+
+  onKaratChange(): void {
+    this.karatTouched.set(true);
+  }
+
+  onWeightBlur(): void {
+    this.weightTouched.set(true);
+  }
+
+  onCurrencyChange(): void {
+    this.currencyTouched.set(true);
+  }
+
+  // Rate limiting methods
+  canCalculate(): boolean {
+    if (isPlatformBrowser(this.platformId)) {
+      const savedData = localStorage.getItem(METALS_CALC_STORAGE_KEY);
+      if (!savedData) return true;
+      
+      try {
+        const parsed = JSON.parse(savedData);
+        if (parsed.timestamp) {
+          const hoursDiff = (Date.now() - parsed.timestamp) / (1000 * 60 * 60);
+          return hoursDiff >= this.COOLDOWN_HOURS;
+        }
+      } catch {
+        return true;
+      }
+    }
+    return true;
+  }
+
+  updateRemainingTime(): void {
+    if (isPlatformBrowser(this.platformId)) {
+      const savedData = localStorage.getItem(METALS_CALC_STORAGE_KEY);
+      if (!savedData) {
+        this.remainingTime.set(null);
+        return;
+      }
+      
+      try {
+        const parsed = JSON.parse(savedData);
+        if (parsed.timestamp) {
+          const hoursDiff = (Date.now() - parsed.timestamp) / (1000 * 60 * 60);
+          
+          if (hoursDiff < this.COOLDOWN_HOURS) {
+            const remaining = this.COOLDOWN_HOURS - hoursDiff;
+            this.remainingTime.set({
+              hours: Math.floor(remaining),
+              minutes: Math.floor((remaining % 1) * 60)
+            });
+          } else {
+            this.remainingTime.set(null);
+          }
+        }
+      } catch {
+        this.remainingTime.set(null);
+      }
+    }
+  }
+
   calculatePrice(): void {
-    if (!this.selectedMetal || !this.selectedKarat || !this.selectedCurrency || !this.weight) {
+    this.isSubmitted.set(true);
+
+    if (!this.isFormValid()) {
       return;
     }
 
-    const basePricePerGram = 295.5;
-    const karatMultiplier = this.selectedKarat.value / 24;
-    const calculatedPrice = this.weight * basePricePerGram * karatMultiplier;
+    if (!this.canCalculate()) {
+      return;
+    }
 
-    this.result.set(calculatedPrice);
-    this.showResult.set(true);
+    this.isCalculating.set(true);
+    this.showResult.set(false);
+
+    const queryParams = new URLSearchParams({
+      metal: this.selectedMetal!.code,
+      karat: this.selectedKarat!.value.toString(),
+      currency: this.selectedCurrency!.code,
+      weight: this.weight!.toString(),
+    });
+
+    const endpoint = `${API_END_POINTS.GOLD_PRICE_CALCULATOR}?${queryParams.toString()}`;
+
+    this.apiService.get<PriceCalculatorResponse>(endpoint).subscribe({
+      next: (response) => {
+        if (response?.success && response.total_price) {
+          this.result.set(response.total_price);
+          this.pricePerGram.set(response.price_per_gram);
+          this.showResult.set(true);
+          console.log(response);
+          this.saveResultToStorage(response.total_price, response.price_per_gram);
+        }
+        this.isCalculating.set(false);
+      },
+      error: () => {
+        this.isCalculating.set(false);
+      },
+    });
   }
 
   formatPrice(price: number): string {
-    // Format without commas, just plain number with 2 decimal places
-    return price.toFixed(2);
+    return price.toLocaleString('ar-AE', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
   }
 
-  resetForm(): void {
-    this.selectedMetal = null;
-    this.selectedKarat = null;
-    const defaultCurrency = this.currencies().find((c) => c.code === 'AED') ?? this.currencies()[0];
-    this.selectedCurrency = defaultCurrency ?? null;
-    this.weight = null;
+  resetCalculator(): void {
+    // Only allow reset if cooldown has expired
+    if (!this.canCalculate()) {
+      return;
+    }
     this.result.set(null);
+    this.pricePerGram.set(null);
     this.showResult.set(false);
+    this.remainingTime.set(null);
+    this.clearStoredResult();
+    // Reset validation state
+    this.isSubmitted.set(false);
+    this.metalTouched.set(false);
+    this.karatTouched.set(false);
+    this.weightTouched.set(false);
+    this.currencyTouched.set(false);
+  }
+
+  private loadSavedResult(): void {
+    if (isPlatformBrowser(this.platformId)) {
+      const savedData = localStorage.getItem(METALS_CALC_STORAGE_KEY);
+      if (savedData) {
+        try {
+          const parsed = JSON.parse(savedData);
+          if (parsed.price && parsed.timestamp) {
+            // Always show saved result (don't clear on expiration)
+            this.result.set(parsed.price);
+            this.pricePerGram.set(parsed.pricePerGram ?? null);
+            this.showResult.set(true);
+            // Restore selections
+            if (parsed.metalCode) {
+              this.selectedMetal = { 
+                code: parsed.metalCode, 
+                name: this.metalNamesAr[parsed.metalCode] ?? parsed.metalCode 
+              };
+            }
+            if (parsed.karatValue) {
+              this.selectedKarat = { 
+                name: `${parsed.karatValue} `, 
+                value: parsed.karatValue 
+              };
+            }
+            this.selectedCurrency = { 
+              code: parsed.currencyCode, 
+              name: parsed.currencyName ?? '', 
+              flag: this.currencyFlagMap[parsed.currencyCode] ?? '' 
+            };
+            this.weight = parsed.weight ?? null;
+            // Update remaining time for cooldown
+            this.updateRemainingTime();
+          }
+        } catch {
+          this.clearStoredResult();
+        }
+      }
+    }
+  }
+
+  private saveResultToStorage(price: number, pricePerGram: number): void {
+    if (isPlatformBrowser(this.platformId) && this.selectedCurrency && this.selectedMetal && this.selectedKarat) {
+      const dataToSave = {
+        price,
+        pricePerGram,
+        metalCode: this.selectedMetal.code,
+        karatValue: this.selectedKarat.value,
+        currencyCode: this.selectedCurrency.code,
+        currencyName: this.selectedCurrency.name,
+        weight: this.weight,
+        timestamp: Date.now(),
+      };
+      localStorage.setItem(METALS_CALC_STORAGE_KEY, JSON.stringify(dataToSave));
+    }
+  }
+
+  private clearStoredResult(): void {
+    if (isPlatformBrowser(this.platformId)) {
+      localStorage.removeItem(METALS_CALC_STORAGE_KEY);
+    }
   }
 }

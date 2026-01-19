@@ -254,5 +254,5 @@
 
 /* Weight Input Validation Error */
 .weight-input.border-red-500 {
-  border: 1px solid #ef4444 !important;
+  border: 2px solid #ef4444 !important;
 }

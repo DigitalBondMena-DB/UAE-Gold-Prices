@@ -29,6 +29,13 @@ interface ConversionResponse {
   result: number;
 }
 
+interface RateLimitError {
+  status: boolean;
+  message: string;
+  retry_after_seconds: number;
+  retry_after_minutes: number;
+}
+
 @Component({
   selector: 'app-currency-calculator',
   imports: [HeroSection, FormsModule, Select],
@@ -66,6 +73,9 @@ export class CurrencyCalculator implements OnInit {
   amountTouched = signal<boolean>(false);
   fromCurrencyTouched = signal<boolean>(false);
   toCurrencyTouched = signal<boolean>(false);
+
+  // Rate limit error
+  rateLimitError = signal<{ message: string; hours: number; minutes: number } | null>(null);
 
   // Currency code to flag mapping (ISO 3166-1 alpha-2)
   private currencyFlagMap: Record<string, string> = {
@@ -278,6 +288,7 @@ export class CurrencyCalculator implements OnInit {
           this.convertedAmount.set(response.result);
           this.exchangeRate.set(response.rate);
           this.showResult.set(true);
+          this.rateLimitError.set(null);
           this.saveResultToStorage(response.result, response.rate);
         }
         this.isConverting.set(false);
@@ -285,6 +296,15 @@ export class CurrencyCalculator implements OnInit {
       error: (error) => {
         console.error('Currency Conversion Error:', error);
         this.isConverting.set(false);
+        if (error.status === 429 && error.error) {
+          const rateLimitData = error.error as RateLimitError;
+          const { hours, minutes } = this.convertSecondsToHoursMinutes(rateLimitData.retry_after_seconds);
+          this.rateLimitError.set({
+            message: rateLimitData.message,
+            hours,
+            minutes
+          });
+        }
       },
     });
   }
@@ -373,5 +393,15 @@ export class CurrencyCalculator implements OnInit {
   getShortName(name: string): string {
     // Truncate long currency names
     return name.length > 20 ? name.substring(0, 17) + '...' : name;
+  }
+
+  private convertSecondsToHoursMinutes(seconds: number): { hours: number; minutes: number } {
+    const hours = Math.floor(seconds / 3600);
+    const minutes = Math.floor((seconds % 3600) / 60);
+    return { hours, minutes };
+  }
+
+  dismissRateLimitError(): void {
+    this.rateLimitError.set(null);
   }
 }

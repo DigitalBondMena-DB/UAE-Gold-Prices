@@ -5,10 +5,11 @@ import { AboutHome } from '../../../core/models/home.model';
 import { ApiService } from '../../../core/services/api-service';
 import { AppButton } from '../../../shared/components/app-button/app-button';
 import { SectionTitle } from '../../../shared/components/section-title/section-title';
+import { RouterLink } from '@angular/router';
 
 @Component({
   selector: 'app-home-about',
-  imports: [SectionTitle, AppButton],
+  imports: [SectionTitle, AppButton, RouterLink],
   templateUrl: './home-about.html',
   styleUrl: './home-about.css',
 })

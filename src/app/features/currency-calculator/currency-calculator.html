@@ -3,7 +3,7 @@
 </app-hero-section>
 
 <!-- Currency Calculator Section -->
-<section class="currency-calc-section py-16 md:py-24 -translate-y-[30%]">
+<section class="currency-calc-section py-16 md:py-24 -translate-y-[25%]">
     <div class="container mx-auto px-5 lg:px-20">
         <!-- Calculator Card -->
         <div class="calc-card bg-white rounded-2xl shadow-xl p-6 md:p-10  mx-auto ">
@@ -135,6 +135,30 @@
                     }
                 </div>
             </div>
+
+            <!-- Rate Limit Error Box -->
+            @if (rateLimitError(); as error) {
+                <div class="mt-6 w-full max-w-2xl mx-auto" dir="rtl">
+                    <div class="bg-red-50 border border-red-300 rounded-xl p-5">
+                        <div class="flex items-start gap-3">
+                            <svg class="w-6 h-6 text-red-500 shrink-0 mt-0.5" fill="currentColor" viewBox="0 0 20 20">
+                                <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd"></path>
+                            </svg>
+                            <div>
+                                <p class="text-red-700 font-bold text-lg">{{ error.message }}</p>
+                                <p class="text-red-600 mt-2 font-medium">
+                                    يمكنك المحاولة مرة أخرى بعد 
+                                    <span class="font-bold">{{ error.hours }} ساعة</span>
+                                    @if (error.minutes > 0) {
+                                        <span> و </span>
+                                        <span class="font-bold">{{ error.minutes }} دقيقة</span>
+                                    }
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            }
 
             <!-- Calculate Button / Result Display -->
             <div class="mt-8 flex flex-col items-center" dir="ltr">

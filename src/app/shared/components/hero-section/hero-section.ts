@@ -17,5 +17,5 @@ export class HeroSection {
   backgroundImage = input<string>('/images/hero/hero-bg.webp');
   
   // Optional: minimum height class
-  minHeight = input<string>('min-h-[80vh]');
+  minHeight = input<string>('min-h-[85vh]');
 }

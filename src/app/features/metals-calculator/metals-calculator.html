@@ -29,7 +29,7 @@
                         
                         <!-- Title -->
                         <h2 class="text-2xl md:text-3xl lg:text-4xl font-bold text-gold-dark mb-4">
-                            ما هي حاسبة الذهب ؟
+                            ما هي حاسبة المعادن ؟
                         </h2>
                         
                         <!-- Description -->
@@ -229,6 +229,30 @@
                     }
                 </div>
             </div>
+            <!-- Rate Limit Error Box -->
+            @if (rateLimitError(); as error) {
+                <div class="mb-6 w-full max-w-2xl mx-auto" dir="rtl">
+                    <div class="bg-red-900/50 border border-red-400/50 rounded-xl p-5 backdrop-blur-sm">
+                        <div class="flex items-start gap-3">
+                            <svg class="w-6 h-6 text-red-400 shrink-0 mt-0.5" fill="currentColor" viewBox="0 0 20 20">
+                                <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd"></path>
+                            </svg>
+                            <div>
+                                <p class="text-red-200 font-bold text-lg">{{ error.message }}</p>
+                                <p class="text-red-300 mt-2 font-medium">
+                                    يمكنك المحاولة مرة أخرى بعد 
+                                    <span class="font-bold text-red-200">{{ error.hours }} ساعة</span>
+                                    @if (error.minutes > 0) {
+                                        <span> و </span>
+                                        <span class="font-bold text-red-200">{{ error.minutes }} دقيقة</span>
+                                    }
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            }
+
             <!-- Calculate Button / Result Display -->
             <div class="flex flex-col items-center">
                 @if (showResult() && result() !== null) {

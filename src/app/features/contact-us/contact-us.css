@@ -96,10 +96,13 @@
   border-radius: 50%;
   background: linear-gradient(145deg, #D0A51A 0%, #B8930F 100%);
   display: flex;
+  flex-direction: column;
   align-items: center;
   justify-content: center;
+  gap: 4px;
   box-shadow: 0 4px 15px rgba(208, 165, 26, 0.4);
   transition: transform 0.3s ease, box-shadow 0.3s ease;
+  padding: 10px;
 }
 
 .bubble-icon:hover {
@@ -108,12 +111,15 @@
 }
 
 .bubble-text {
-  font-size: 0.75rem;
+  font-size: 0.625rem;
   color: #FFFFFF;
   font-weight: 500;
-  white-space: wrap;
   direction: ltr;
-  line-clamp: 2;
+  text-align: center;
+  word-break: break-all;
+  line-height: 1.4;
+  max-width: 90px;
+  padding: 0 5px;
 }
 
 /* Email bubble - top left */
@@ -597,9 +603,11 @@
   .bubble-icon {
     width: 100px;
     height: 100px;
+    padding: 8px;
   }
   
   .bubble-text {
-    font-size: 0.6rem;
+    font-size: 0.55rem;
+    max-width: 75px;
   }
 }

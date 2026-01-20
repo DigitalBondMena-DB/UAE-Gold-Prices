@@ -19,12 +19,16 @@ export interface ContactInfo {
 }
 
 export interface ContactBanner {
+  small_title: string | null;
   title: string;
   text: string;
   main_image: string;
+  meta_title: string | null;
+  meta_description: string | null;
+  page_schema: string | null;
+  page_name: string;
 }
 
-export interface ContactResponse {
+export interface ContactPageResponse {
   bannerSection: ContactBanner;
-  contactInfo: ContactInfo;
 }

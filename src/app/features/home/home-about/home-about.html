@@ -6,8 +6,9 @@
 
                 <div class="text-2xl font-medium mt-6 text-[#3C2E00] max-w-xl" [innerHTML]="aboutData()?.text ?? 'نوفّر متابعة سهلة لسوق الذهب عبر أسعار مباشرة وأخبار وتحليلات متجددة في مكان واحد. هدفنا أن نكون مصدر الثقة الأول في سوق المعادن الثمينة داخل الإمارات.'">
                 </div>
-                <div class="mt-6 lg:block hidden">
-                    <app-app-button btnText="اقرأ المزيد" routerLink="/about-us"></app-app-button>
+                <div class="mt-6 lg:block hidden relative z-50!">
+                    <app-app-button btnText="اقرأ المزيد" routerLink="/about-us"
+                    customClass="cursor-pointer! px-5  py-2.5 bg-[#00843D] text-white font-medium text-lg rounded-xl flex items-center justify-center transition duration-300"></app-app-button>
                 </div>
             </div>
 

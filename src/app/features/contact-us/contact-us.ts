@@ -6,7 +6,7 @@ import { InputTextModule } from 'primeng/inputtext';
 import { TextareaModule } from 'primeng/textarea';
 import { API_END_POINTS } from '../../core/constant/ApiEndPoints';
 import { COUNTRIES, Country } from '../../core/data/countries';
-import { ContactBanner, ContactInfo, ContactResponse } from '../../core/models/contact.model';
+import { ContactBanner, ContactInfo, ContactPageResponse } from '../../core/models/contact.model';
 import { ApiService } from '../../core/services/api-service';
 import { SeoService } from '../../core/services/seo.service';
 import { HeroSection } from '../../shared/components/hero-section/hero-section';
@@ -95,29 +95,50 @@ export class ContactUs implements OnInit {
   });
 
   ngOnInit(): void {
+    this.loadBannerData();
     this.loadContactInfo();
-    this.setSeoTags();
   }
 
-  private setSeoTags(): void {
+  private setSeoTags(banner: ContactBanner): void {
     this.seoService.updateMetaTags({
-      title: 'اتصل بنا',
-      description: 'تواصل معنا للاستفسارات والاقتراحات حول أسعار الذهب في الإمارات. نحن هنا لمساعدتك والإجابة على جميع أسئلتك المتعلقة بالذهب والعملات.',
+      title: banner.meta_title ?? 'اتصل بنا',
+      description: banner.meta_description ?? 'تواصل معنا للاستفسارات والاقتراحات حول أسعار الذهب في الإمارات. نحن هنا لمساعدتك والإجابة على جميع أسئلتك المتعلقة بالذهب والعملات.',
       keywords: 'اتصل بنا, تواصل معنا, contact us, استفسارات الذهب, خدمة العملاء',
       canonicalUrl: `${this.seoService.getSiteUrl()}/contact-us`,
       ogType: 'website'
     });
   }
 
-  loadContactInfo(): void {
-    this.isLoading.set(true);
-    this.apiService.get<ContactResponse>(API_END_POINTS.CONTACT_INFO).subscribe({
+  loadBannerData(): void {
+    this.apiService.get<ContactPageResponse>(API_END_POINTS.CONTACT_US).subscribe({
       next: (response) => {
         if (response?.bannerSection) {
           this.bannerSection.set(response.bannerSection);
+          this.setSeoTags(response.bannerSection);
         }
-        if (response?.contactInfo) {
-          this.contactInfo.set(response.contactInfo);
+      },
+      error: () => {
+        // Use default SEO tags on error
+        this.setSeoTags({
+          small_title: null,
+          title: 'تواصل معنا',
+          text: '',
+          main_image: '',
+          meta_title: 'اتصل بنا',
+          meta_description: 'تواصل معنا للاستفسارات والاقتراحات',
+          page_schema: null,
+          page_name: 'contact'
+        });
+      },
+    });
+  }
+
+  loadContactInfo(): void {
+    this.isLoading.set(true);
+    this.apiService.get<ContactInfo>(API_END_POINTS.CONTACT_INFO).subscribe({
+      next: (response) => {
+        if (response) {
+          this.contactInfo.set(response);
         }
         this.isLoading.set(false);
       },

@@ -49,6 +49,13 @@ interface PriceCalculatorResponse {
   total_price: number;
 }
 
+interface RateLimitError {
+  status: boolean;
+  message: string;
+  retry_after_seconds: number;
+  retry_after_minutes: number;
+}
+
 @Component({
   selector: 'app-metals-calculator',
   imports: [HeroSection, SectionTitle, FormsModule, Select],
@@ -91,6 +98,9 @@ export class MetalsCalculator implements OnInit {
   karatTouched = signal<boolean>(false);
   weightTouched = signal<boolean>(false);
   currencyTouched = signal<boolean>(false);
+
+  // Rate limit error
+  rateLimitError = signal<{ message: string; hours: number; minutes: number } | null>(null);
 
   // Metal name mapping for Arabic display
   private metalNamesAr: Record<string, string> = {
@@ -339,13 +349,24 @@ export class MetalsCalculator implements OnInit {
           this.result.set(response.total_price);
           this.pricePerGram.set(response.price_per_gram);
           this.showResult.set(true);
+          this.rateLimitError.set(null);
           console.log(response);
           this.saveResultToStorage(response.total_price, response.price_per_gram);
         }
         this.isCalculating.set(false);
       },
-      error: () => {
+      error: (error) => {
+        console.log('API Error:', error);
         this.isCalculating.set(false);
+        if (error.status === 429 && error.error) {
+          const rateLimitData = error.error as RateLimitError;
+          const { hours, minutes } = this.convertSecondsToHoursMinutes(rateLimitData.retry_after_seconds);
+          this.rateLimitError.set({
+            message: rateLimitData.message,
+            hours,
+            minutes
+          });
+        }
       },
     });
   }
@@ -432,5 +453,15 @@ export class MetalsCalculator implements OnInit {
     if (isPlatformBrowser(this.platformId)) {
       localStorage.removeItem(METALS_CALC_STORAGE_KEY);
     }
+  }
+
+  private convertSecondsToHoursMinutes(seconds: number): { hours: number; minutes: number } {
+    const hours = Math.floor(seconds / 3600);
+    const minutes = Math.floor((seconds % 3600) / 60);
+    return { hours, minutes };
+  }
+
+  dismissRateLimitError(): void {
+    this.rateLimitError.set(null);
   }
 }

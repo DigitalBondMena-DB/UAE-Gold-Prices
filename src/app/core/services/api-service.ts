@@ -1,6 +1,6 @@
 import { HttpClient } from '@angular/common/http';
 import { inject, Injectable, signal } from '@angular/core';
-import { catchError, Observable, of, tap } from 'rxjs';
+import { catchError, Observable, of, tap, throwError } from 'rxjs';
 import { environment } from '../../../environments/environment';
 
 @Injectable({
@@ -34,7 +34,7 @@ export class ApiService {
       catchError((err) => {
         this.error.set(err.message ?? 'Error');
         this.loading.set(false);
-        return of(null as T);
+        return throwError(() => err);
       })
     );
   }

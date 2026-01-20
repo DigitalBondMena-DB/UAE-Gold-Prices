@@ -92,22 +92,16 @@
                         [circular]="true" 
                         [autoplayInterval]="3000"
                         (onPage)="onPageChange($event)">
-                        <ng-template #item let-item let-i="index">
+                        <ng-template #item let-item>
                             <div class="px-2 py-2">
                                 <div class="carousel-card group relative overflow-hidden rounded-xl cursor-pointer transition-all duration-300 h-48 md:h-56 lg:h-64"
                                     (click)="selectImage(item)">
-                                    <!-- Card Image - First image uses priority for LCP optimization -->
-                                    @if (i === 0) {
-                                        <img [ngSrc]="item.image" [alt]="item.title"
-                                            width="400" height="256"
-                                            priority
-                                            class="w-full h-full object-cover" />
-                                    } @else {
-                                        <img [ngSrc]="item.image" [alt]="item.title"
-                                            width="400" height="256"
-                                            loading="eager"
-                                            class="w-full h-full object-cover" />
-                                    }
+                                    <!-- Card Image - All carousel images use high priority for fast LCP -->
+                                    <img [src]="item.image" [alt]="item.title"
+                                        width="400" height="256"
+                                        fetchpriority="high"
+                                        loading="eager"
+                                        class="w-full h-full object-cover" />
                                     <!-- Gradient Overlay -->
                                     <div class="carousel-gradient absolute inset-0 bg-linear-to-t from-black/90 via-black/30 to-transparent"></div>
                                     <!-- Card Title -->

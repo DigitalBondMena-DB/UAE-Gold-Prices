@@ -346,12 +346,37 @@
   border-radius: 0.25rem;
 }
 
-.blog-content ul,
-.blog-content ol {
+.blog-content ul {
   margin: 1.5rem 0 !important;
-  padding-right: 2rem !important;
+  padding-right: 0 !important;
+  padding-left: 0 !important;
   direction: rtl !important;
   font-family: 'Tajawal', sans-serif !important;
+  list-style: none !important;
+}
+
+.blog-content ol {
+  margin: 1.5rem 0 !important;
+  padding-right: 0 !important;
+  padding-left: 0 !important;
+  direction: rtl !important;
+  font-family: 'Tajawal', sans-serif !important;
+  list-style: none !important;
+  counter-reset: list-counter !important;
+}
+
+.blog-content ul ul {
+  margin: 0.5rem 0 !important;
+  padding-right: 1.5rem !important;
+}
+
+.blog-content ul ul ul {
+  padding-right: 1.5rem !important;
+}
+
+.blog-content ol ol {
+  margin: 0.5rem 0 !important;
+  padding-right: 1.5rem !important;
 }
 
 .blog-content li {
@@ -360,6 +385,51 @@
   color: #3C2E00 !important;
   font-family: 'Tajawal', sans-serif !important;
   direction: rtl !important;
+  font-size: 1.1rem !important;
+  position: relative !important;
+  padding-right: 1.5rem !important;
+}
+
+/* Custom bullet for ul li */
+.blog-content ul > li::before {
+  content: '' !important;
+  position: absolute !important;
+  right: 0 !important;
+  top: 0.75rem !important;
+  width: 8px !important;
+  height: 8px !important;
+  background-color: #D0A51A !important;
+  border-radius: 50% !important;
+}
+
+/* Nested ul - circle bullet */
+.blog-content ul ul > li::before {
+  background-color: transparent !important;
+  border: 2px solid #D0A51A !important;
+  width: 6px !important;
+  height: 6px !important;
+}
+
+/* Third level ul - square bullet */
+.blog-content ul ul ul > li::before {
+  border-radius: 0 !important;
+  background-color: #D0A51A !important;
+  width: 6px !important;
+  height: 6px !important;
+}
+
+/* Custom numbers for ol li */
+.blog-content ol > li {
+  counter-increment: list-counter !important;
+}
+
+.blog-content ol > li::before {
+  content: counter(list-counter) '.' !important;
+  position: absolute !important;
+  right: 0 !important;
+  top: 0 !important;
+  color: #D0A51A !important;
+  font-weight: 700 !important;
   font-size: 1.1rem !important;
 }
 

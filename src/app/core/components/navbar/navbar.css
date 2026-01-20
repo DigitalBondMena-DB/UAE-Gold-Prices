@@ -3,6 +3,9 @@
   display: block;
   width: 100%;
 }
+nav{
+  z-index: 999999999!important;
+}
 
 /* Dropdown hover delay for better UX */
 .group:hover .group-hover\:visible {

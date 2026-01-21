@@ -1,7 +1,7 @@
 /* Markazi Text Font - Arabic display font for headings */
 @font-face {
     font-family: 'Markazi Text';
-    src: url('./markazi/MarkaziText-Regular.woff2') format('woff2');
+    src: url('/fonts/markazi/MarkaziText-Regular.woff2') format('woff2');
     font-weight: 400;
     font-style: normal;
     font-display: swap;
@@ -12,7 +12,7 @@
 
 @font-face {
     font-family: 'Markazi Text';
-    src: url('./markazi/MarkaziText-Medium.woff2') format('woff2');
+    src: url('/fonts/markazi/MarkaziText-Medium.woff2') format('woff2');
     font-weight: 500;
     font-style: normal;
     font-display: swap;
@@ -23,7 +23,7 @@
 
 @font-face {
     font-family: 'Markazi Text';
-    src: url('./markazi/MarkaziText-Bold.woff2') format('woff2');
+    src: url('/fonts/markazi/MarkaziText-Bold.woff2') format('woff2');
     font-weight: 700;
     font-style: normal;
     font-display: swap;
@@ -35,7 +35,7 @@
 /* Tajawal Font - Arabic body text font */
 @font-face {
     font-family: 'Tajawal';
-    src: url('./tajawal/Tajawal-Regular.woff2') format('woff2');
+    src: url('/fonts/tajawal/Tajawal-Regular.woff2') format('woff2');
     font-weight: 400;
     font-style: normal;
     font-display: swap;
@@ -46,7 +46,7 @@
 
 @font-face {
     font-family: 'Tajawal';
-    src: url('./tajawal/Tajawal-Medium.woff2') format('woff2');
+    src: url('/fonts/tajawal/Tajawal-Medium.woff2') format('woff2');
     font-weight: 500;
     font-style: normal;
     font-display: swap;
@@ -57,7 +57,7 @@
 
 @font-face {
     font-family: 'Tajawal';
-    src: url('./tajawal/Tajawal-Bold.woff2') format('woff2');
+    src: url('/fonts/tajawal/Tajawal-Bold.woff2') format('woff2');
     font-weight: 700;
     font-style: normal;
     font-display: swap;

@@ -21,12 +21,13 @@
             <!-- Default Background - Always in DOM for LCP discovery -->
             <img [src]="defaultHeroImage() || 'images/hero/hero.webp'" 
                 alt="hero background" 
-                class="hero-bg absolute inset-0 w-full h-full object-center object-cover"
+                class="hero-bg absolute inset-0 w-full h-full object-center object-cover cursor-pointer"
                 [class.hidden-bg]="selectedImage()"
                 [class.opacity-0]="isLoading()"
                 width="1920" height="1080" 
                 fetchpriority="high" 
-                loading="eager" />
+                loading="eager"
+                (click)="navigateToBlog()" />
             <!-- Previous Background (fading out) -->
             @if (previousImage()) {
                 <img [src]="previousImage()" alt="previous background" 
@@ -41,15 +42,13 @@
                     (click)="navigateToBlog()" />
             }
         </div>
-        <!-- Dark Overlay - Clickable when item is selected -->
-        <div class="absolute inset-0 bg-linear-to-t from-black/80 via-black/40 to-transparent z-1"
-            [class.cursor-pointer]="selectedImage()"
-            (click)="selectedImage() && navigateToBlog()"></div>
+        <!-- Dark Overlay - Clickable to navigate to blog -->
+        <div class="absolute inset-0 bg-linear-to-t from-black/80 via-black/40 to-transparent z-1 cursor-pointer"
+            (click)="navigateToBlog()"></div>
         <div class="container h-full mx-auto px-5 lg:px-20 relative z-10 flex flex-col justify-center pt-20">
-            <!-- Hero Text Content -->
-            <div class="text-right mb-2" 
-                [class.cursor-pointer]="selectedImage()"
-                (click)="selectedImage() && navigateToBlog()">
+            <!-- Hero Text Content - Clickable to navigate to blog -->
+            <div class="text-right mb-2 cursor-pointer" 
+                (click)="navigateToBlog()">
                 <!-- Skeleton for Title and Text while loading -->
                 @if (isLoading()) {
                     <div class="hero-skeleton-text">

@@ -130,8 +130,13 @@ export class Home implements OnInit, OnDestroy {
   departments = computed<Department[]>(() => this.homeData()?.departments ?? []);
   latestBlogs = computed<LatestBlog[]>(() => this.homeData()?.latestBlogs ?? []);
 
-  // Default hero background from API
-  defaultHeroImage = computed(() => this.bannerSection()?.main_image ?? '');
+  // Default hero background from API - use first carousel item's image
+  defaultHeroImage = computed(() => this.carouselItems()[0]?.image ?? '');
+  
+  // Default hero title and text from first carousel item
+  defaultHeroTitle = computed(() => this.carouselItems()[0]?.title ?? 'تحديثات لحظية لأسعار الذهب');
+  defaultHeroText = computed(() => this.carouselItems()[0]?.smallText ?? 'احصل على أحدث أسعار الذهب والفضة والمعادن الثمينة مع تحديثات فورية.');
+  defaultHeroSlug = computed(() => this.carouselItems()[0]?.slug ?? null);
 
   // Computed signal for visible range
   visibleRange = computed(() => {
@@ -351,7 +356,7 @@ export class Home implements OnInit, OnDestroy {
 
   // Navigate to blog detail page
   navigateToBlog(): void {
-    const slug = this.selectedSlug();
+    const slug = this.selectedSlug() ?? this.defaultHeroSlug();
     if (slug) {
       this.router.navigate(['/blog', slug]);
     }

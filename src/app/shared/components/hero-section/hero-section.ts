@@ -1,8 +1,9 @@
 import { Component, input } from '@angular/core';
+import { NgOptimizedImage } from '@angular/common';
 
 @Component({
   selector: 'app-hero-section',
-  imports: [],
+  imports: [NgOptimizedImage],
   templateUrl: './hero-section.html',
   styleUrl: './hero-section.css',
 })

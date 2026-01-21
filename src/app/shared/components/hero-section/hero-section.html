@@ -1,10 +1,11 @@
 <section class="hero-section relative overflow-hidden" [class]="minHeight()">
   <!-- Background Image -->
   <img 
-    [src]="backgroundImage()" 
+    [ngSrc]="backgroundImage()" 
     alt="hero background" 
     class="absolute inset-0 w-full h-full object-cover object-center"
-    loading="eager" />
+    fill
+    priority />
   
   <!-- Gradient Overlay -->
   <div class="absolute inset-0 bg-gradient-to-b from-black/60 via-black/50 to-black/70"></div>
